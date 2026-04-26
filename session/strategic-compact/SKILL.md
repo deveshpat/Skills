@@ -8,7 +8,8 @@ description: >
 category: session
 tags: [context, compaction, long-session, continuity, memory]
 target_llms: [all]
-source: original
+source: community/affaan-m/everything-claude-code
+upstream_url: https://github.com/affaan-m/everything-claude-code/tree/main/skills/strategic-compact
 inputs:
   - name: current conversation state
     required: true
