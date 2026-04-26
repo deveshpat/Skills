@@ -10,8 +10,8 @@ composable_with:
   - planning/write-a-prd
 ---
 
-> **Content source:** [mattpocock/skills/grill-me](https://github.com/mattpocock/skills/tree/main/grill-me)
-> Install full content: `npx skills@latest add mattpocock/skills/grill-me`
+Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
 
-Replace this file's body with the upstream SKILL.md content after installing.
-The frontmatter above is already correctly structured for this repo.
+Ask the questions one at a time.
+
+If a question can be answered by exploring the codebase, explore the codebase instead.
