@@ -1,4 +1,4 @@
-# deveshpat/skills
+# Skills
 
 A portable, LLM-agnostic skill library. Works on Claude Code, claude.ai, ChatGPT, Gemini,
 and custom models. Each skill is a structured workflow definition — not a prompt, a process.
@@ -131,3 +131,12 @@ structures `tdd` and anchors `triage-issue`'s fix planning.
 
 **[Eric Evans](https://www.domainlanguage.com/)** — Ubiquitous Language and the bounded-context
 model from *Domain-Driven Design*. Directly underpins `ubiquitous-language`.
+
+**[Affaan M](https://github.com/affaan-m/everything-claude-code)** — `strategic-compact`.
+The strategic context compaction skill originates from `everything-claude-code`, an
+Anthropic hackathon–winning agent harness with 55k+ stars.
+
+**[Jesse Vincent / obra](https://github.com/obra/superpowers)** — `systematic-debugging`.
+The base debugging methodology (root-cause-first, backward call-stack tracing) comes from
+`obra/superpowers`. The ML-specific patterns (GPU device verification, distributed deadlock
+detection, checkpoint hash validation) are additions specific to this repo.
