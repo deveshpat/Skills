@@ -8,7 +8,9 @@ description: >
 category: session
 tags: [debugging, diagnosis, silent-failure, environment, root-cause]
 target_llms: [all]
-source: original
+source: community/obra/superpowers
+upstream_url: https://github.com/obra/superpowers/blob/main/skills/systematic-debugging/SKILL.md
+notes: ML-specific additions (GPU checks, distributed deadlock, checkpoint patterns)
 inputs:
   - name: failure description or log snippet
     required: true
