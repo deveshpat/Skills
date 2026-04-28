@@ -1,75 +1,72 @@
 ---
 name: request-refactor-plan
-description: >
-  Turn an agreed RFC into a self-contained coding-agent prompt with zero assumed context. Triggers: 'write the agent prompt', 'create a refactor prompt', 'generate a coding agent prompt for this refactor'. Do NOT trigger without an agreed RFC or decision.
+description: Generate a precise coding-agent prompt for a refactor after architecture direction is known. Use when the user wants an implementation prompt, not when they want you to perform the refactor directly.
 category: architecture
-tags: [architecture, refactoring, agent-prompt, coding-agent]
-target_llms: [all]
-source: mattpocock/skills
+tags:
+  - refactor
+  - prompt
+  - coding-agent
+  - architecture
+target_llms:
+  - claude-code
+  - chatgpt
 composable_with:
+  - architecture/improve-codebase-architecture
   - development/tdd
 ---
 
-This skill will be invoked when the user wants to create a refactor request. You should go through the steps below. You may skip steps if you don't consider them necessary.
+# Request Refactor Plan
 
-1. Ask the user for a long, detailed description of the problem they want to solve and any potential ideas for solutions.
+Use this skill to turn an architectural decision into an implementation-ready coding-agent prompt.
 
-2. Explore the repo to verify their assertions and understand the current state of the codebase.
+## When to Use
 
-3. Ask whether they have considered other options, and present other options to them.
+Use this when:
+- the architecture direction is already known;
+- the user wants a prompt for another coding agent;
+- the task should be scoped, staged, and verifiable;
+- the user needs guardrails against broad, unsafe rewrites.
 
-4. Interview the user about the implementation. Be extremely detailed and thorough.
+Do not use this when the user is still asking for architectural diagnosis. In that case, use `improve-codebase-architecture` first.
 
-5. Hammer out the exact scope of the implementation. Work out what you plan to change and what you plan not to change.
+## Inputs
 
-6. Look in the codebase to check for test coverage of this area of the codebase. If there is insufficient test coverage, ask the user what their plans for testing are.
+Collect or infer:
+- repository/project name;
+- current pain point;
+- target files/modules;
+- constraints and non-goals;
+- expected verification commands;
+- expected output format.
 
-7. Break the implementation into a plan of tiny commits. Remember Martin Fowler's advice to "make each refactoring step as small as possible, so that you can always see the program working."
+## Process
 
-8. Create a GitHub issue with the refactor plan. Use the following template for the issue description:
+1. Restate the refactor objective in one sentence.
+2. Identify exact files or areas to inspect first.
+3. Specify what must change and what must not change.
+4. Require a plan before edits if the work is risky.
+5. Require small, reviewable changes.
+6. Require tests, static checks, or manual verification.
+7. Require a final summary with changed files and verification results.
 
-<refactor-plan-template>
+## Output Contract
 
-## Problem Statement
+Produce a prompt that includes:
+- context;
+- objective;
+- constraints;
+- implementation steps;
+- verification checklist;
+- explicit stop conditions;
+- expected final response format.
 
-The problem that the developer is facing, from the developer's perspective.
+## Verification
 
-## Solution
+The prompt is successful only if a coding agent can execute it without inventing missing context or making broad unrelated changes.
 
-The solution to the problem, from the developer's perspective.
+## What NOT to Do
 
-## Commits
-
-A LONG, detailed implementation plan. Write the plan in plain English, breaking down the implementation into the tiniest commits possible. Each commit should leave the codebase in a working state.
-
-## Decision Document
-
-A list of implementation decisions that were made. This can include:
-
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
-- Architectural decisions
-- Schema changes
-- API contracts
-- Specific interactions
-
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
-
-## Testing Decisions
-
-A list of testing decisions that were made. Include:
-
-- A description of what makes a good test (only test external behavior, not implementation details)
-- Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
-
-## Out of Scope
-
-A description of the things that are out of scope for this refactor.
-
-## Further Notes (optional)
-
-Any further notes about the refactor.
-
-</refactor-plan-template>
+- Do not ask for a vague “clean up the codebase.”
+- Do not authorize unrelated rewrites.
+- Do not omit verification.
+- Do not let the coding agent decide the project’s architecture from scratch.

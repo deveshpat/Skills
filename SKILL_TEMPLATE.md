@@ -1,13 +1,13 @@
 ---
 name: skill-name
 description: >
-  Specific trigger contract. State: what problem this solves, exact phrases that trigger it,
-  exact situations that do NOT trigger it. Min 50 chars. This IS the Claude Code auto-select
-  trigger and the router match string.
+  Specific trigger contract. State what problem this solves, exact phrases that
+  trigger it, and exact situations that do NOT trigger it. Minimum 50 chars.
+  This IS the Claude Code auto-select trigger and the router match string.
 category: planning | architecture | development | tooling | session | persona
 tags: [tag1, tag2]
 target_llms: [all]
-source: original | mattpocock/skills | community/<repo>
+source: original | mattpocock/skills | community/
 inputs:
   - name: input-name
     description: What you need before starting
@@ -30,8 +30,19 @@ One sentence: what this skill does and why it exists.
 
 ## When to Use / Not Use
 
-**Use when:** exact situations
-**Do NOT use when:** counter-cases (and what to use instead)
+**Use when:** exact situations.
+
+**Do NOT use when:** counter-cases and what to use instead.
+
+---
+
+## Inputs
+
+- **input-name** — required/optional; expected format.
+
+## Outputs
+
+- **output-name** — exact artifact or response produced.
 
 ---
 
@@ -39,7 +50,7 @@ One sentence: what this skill does and why it exists.
 
 ### Step 1 — Action
 
-Concrete instruction. What to do, how, what to look for.
+Concrete instruction. What to do, how, and what to look for.
 
 ### Step 2 — Action
 
@@ -51,17 +62,16 @@ Describe output format precisely. State which skill it feeds into.
 
 ---
 
-## Output Format
+## Verification
 
-\`\`\`
-[Exact structure of what this skill produces]
-\`\`\`
-
----
+- [ ] Contract can be executed from only the inputs above.
+- [ ] Output format is explicit.
+- [ ] Local links and bundled resources exist.
+- [ ] Description is narrow enough for routing.
 
 ## Constraints
 
-- Hard constraint 1 (never do X because Y)
+- Hard constraint 1: never do X because Y.
 
 ## What NOT to Do
 
@@ -69,5 +79,6 @@ Specific anti-patterns for this skill only.
 
 ## Composability
 
-Feeds into: **`category/next-skill`** — how to hand off
-Works after: **`category/prev-skill`** — what it assumes
+Feeds into: **`category/next-skill`** — how to hand off.
+
+Works after: **`category/prev-skill`** — what it assumes.

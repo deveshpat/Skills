@@ -1,79 +1,75 @@
 ---
 name: write-a-prd
 description: >
-  Create a PRD through interactive interview and codebase exploration, filed as a GitHub issue. Triggers: 'write a PRD', 'spec this out', 'I have an idea for X'. Do NOT trigger if a PRD already exists or user wants to implement now.
+  Synthesize the current conversation and codebase context into a structured PRD,
+  usually filed as a GitHub issue. Triggers: 'write a PRD', 'spec this out',
+  'turn this into requirements'. Do NOT trigger when a PRD already exists, when
+  the user wants implementation now, or when the user explicitly asks to be grilled first.
 category: planning
-tags: [planning, prd, requirements, interview, github-issue]
+tags: [planning, prd, requirements, github-issue]
 target_llms: [all]
 source: mattpocock/skills
+upstream: https://github.com/mattpocock/skills/tree/main/to-prd
+aliases: [to-prd]
 composable_with:
   - planning/prd-to-plan
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a PRD. Do NOT interview the user — just synthesize what you already know.
+# Write a PRD
+
+This skill takes the current conversation context and codebase understanding and produces a PRD. Do **not** run a fresh interview by default. If truly blocking information is missing, ask the smallest possible clarification; otherwise synthesize what is already known.
+
+## When to Use / Not Use
+
+**Use when:** the user wants a PRD, requirements document, product spec, or GitHub issue from context already provided.
+
+**Do NOT use when:** the user asks to implement now, already has a PRD, or asks to be challenged first. Use `grill-me` first when the problem is still vague.
 
 ## Process
 
-1. Explore the repo to understand the current state of the codebase, if you haven't already.
+1. Explore the repo to understand current architecture and existing patterns, if that has not already happened.
+2. Sketch the major modules that must be built or modified. Look for opportunities to extract deep modules that can be tested in isolation.
+3. Confirm only genuinely load-bearing uncertainties. Do not interview the user just to fill a template.
+4. Write the PRD using the output format below and submit/file it where the user asked.
 
-2. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
+## Output Format
 
-A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
-
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
-
-3. Write the PRD using the template below and submit it as a GitHub issue.
-
-<prd-template>
-
+```md
 ## Problem Statement
-
-The problem that the user is facing, from the user's perspective.
+The problem from the user's perspective.
 
 ## Solution
-
-The solution to the problem, from the user's perspective.
+The solution from the user's perspective.
 
 ## User Stories
-
-A LONG, numbered list of user stories. Each user story should be in the format of:
-
-1. As an <actor>, I want a <feature>, so that <benefit>
-
-<user-story-example>
-1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
-</user-story-example>
-
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+1. As a <role>, I want <capability>, so that <outcome>.
 
 ## Implementation Decisions
-
-A list of implementation decisions that were made. This can include:
-
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
+- Modules to build/modify
+- Interfaces to change
+- Technical clarifications
 - Architectural decisions
 - Schema changes
 - API contracts
 - Specific interactions
 
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
+Do NOT include volatile file paths or code snippets.
 
 ## Testing Decisions
-
-A list of testing decisions that were made. Include:
-
-- A description of what makes a good test (only test external behavior, not implementation details)
+- What makes a good test for this feature
 - Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
+- Similar tests or prior art in the codebase
 
 ## Out of Scope
-
-A description of the things that are out of scope for this PRD.
+Explicitly excluded work.
 
 ## Further Notes
+Useful context that did not fit elsewhere.
+```
 
-Any further notes about the feature.
+## Verification
 
-</prd-template>
+- [ ] PRD uses current context rather than inventing requirements.
+- [ ] Open questions are truly blocking.
+- [ ] Implementation decisions avoid brittle file-path commitments.
+- [ ] Testing decisions focus on public behavior.

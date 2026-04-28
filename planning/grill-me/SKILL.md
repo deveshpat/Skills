@@ -1,17 +1,60 @@
 ---
 name: grill-me
-description: >
-  Interrogate the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Triggers: 'grill me', 'stress-test this', 'poke holes in my plan', 'what am I missing'. Do NOT trigger for implementation requests or when a spec already exists.
+description: Stress-test an idea, plan, PRD, or decision before execution. Use when the user asks to be challenged, wants holes found, or asks what they are missing.
 category: planning
-tags: [planning, design, decision-tree, stress-test]
-target_llms: [all]
-source: mattpocock/skills
+tags:
+  - critique
+  - planning
+  - risk
+  - review
+target_llms:
+  - chatgpt
+  - claude-code
 composable_with:
   - planning/write-a-prd
+  - planning/prd-to-plan
+  - tooling/write-a-skill
 ---
 
-Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
+# Grill Me
 
-Ask the questions one at a time.
+Use this skill to pressure-test a proposal before the user commits time, code, money, or reputation.
 
-If a question can be answered by exploring the codebase, explore the codebase instead.
+## When to Use
+
+Use when the user says things like:
+- “grill me”
+- “poke holes in this”
+- “stress-test this”
+- “what am I missing?”
+- “is this plan solid?”
+
+## Process
+
+1. Identify the user’s core claim or plan.
+2. List the strongest assumptions behind it.
+3. Attack the plan from practical, technical, strategic, and sequencing angles.
+4. Separate fatal flaws from fixable weaknesses.
+5. Suggest concrete revisions.
+6. End with a decision: proceed, revise first, or stop.
+
+## Output Contract
+
+Return:
+- the plan’s strongest point;
+- the top risks;
+- hidden assumptions;
+- missing evidence;
+- concrete improvements;
+- a final go/no-go recommendation.
+
+## Verification
+
+A good grill should make the plan harder to fool yourself about. It should not merely be negative; it should improve the plan.
+
+## What NOT to Do
+
+- Do not flatter the user into proceeding.
+- Do not invent facts.
+- Do not critique without offering fixes.
+- Do not turn every weakness into a blocker.
