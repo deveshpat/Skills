@@ -17,7 +17,7 @@ Paste this as your system prompt or Custom Instructions, replacing the placehold
 [project-architect](https://raw.githubusercontent.com/deveshpat/skills/main/persona/project-architect/SKILL.md)
 
 # Skills
-Internalize [router.json](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at session start. 
+Internalize [router.json](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at session start and do mentioned announcements accordingly. 
 Load relevant skills only — avoid fetching skills preemptively to preserve context.
 
 # Context
