@@ -17,7 +17,7 @@ Paste this as your system prompt or Custom Instructions, replacing the placehold
 [project-architect](https://raw.githubusercontent.com/deveshpat/skills/main/persona/project-architect/SKILL.md)
 
 # Skills
-https://raw.githubusercontent.com/deveshpat/skills/main/router.json
+Internalize [router.json](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at session start. 
 Load relevant skills only — avoid fetching skills preemptively to preserve context.
 
 # Context
@@ -26,7 +26,7 @@ Current Working Repo → <GitHub_Repo> @ <url>
 
 **`# Persona`** — Optional. Load a persona skill as a standing role for the session (e.g. `project-architect` for multi-session projects, `ml-engineer` for training runs). Omit for one-off tasks.
 
-**`# Skills`** — Points the LLM to the router. It fetches ROUTER.md on demand and from there fetches individual skill URLs only when a trigger matches. For the five most-used skills without any fetching, use [AGENT_PROMPT.md](./AGENT_PROMPT.md) instead.
+**`# Skills`** — Points the LLM to the router. It fetches router.json & internalizes at the session start and from there fetches individual skill URLs only when a trigger matches. For the five most-used skills without any fetching, use [AGENT.md](./AGENT.md) instead.
 
 **`# Context`** — Ground the LLM in your repo. Replace with your actual repo name and URL.
 
@@ -34,14 +34,14 @@ Current Working Repo → <GitHub_Repo> @ <url>
 
 ## Two Ways to Load Skills
 
-### 1. AGENT_PROMPT.md — five skills, zero fetches
+### 1. AGENT.md — five skills, zero fetches
 
-[AGENT_PROMPT.md](./AGENT_PROMPT.md) embeds the five most-used skills inline. Paste it (or instruct the LLM to fetch it) when you want `grill-me`, `tdd`, `systematic-debugging`, `prd-to-plan`, and `strategic-compact` immediately available at a fixed, predictable context cost.
+[AGENT.md](./AGENT.md) embeds the five most-used skills inline. Paste it (or instruct the LLM to fetch it) when you want `grill-me`, `tdd`, `systematic-debugging`, `prd-to-plan`, and `strategic-compact` immediately available at a fixed, predictable context cost.
 
-For all other skills, AGENT_PROMPT.md points to ROUTER.md.
+For all other skills, AGENT_PROMPT.md points to router.json.
 
 ```
-Fetch https://raw.githubusercontent.com/deveshpat/skills/main/AGENT_PROMPT.md
+Fetch https://raw.githubusercontent.com/deveshpat/skills/main/AGENT.md
 and keep its workflows active for this session.
 ```
 
