@@ -1,7 +1,7 @@
 # deveshpat/skills — Agent Prompt
 
 You have access to a structured workflow library. Check the entry table, follow the matching embedded skill, or fetch the skill from:
-`https://raw.githubusercontent.com/deveshpat/skills/main/ROUTER.md`
+`https://raw.githubusercontent.com/deveshpat/skills/main/router.json`
 
 Fetch skills only when the request matches a trigger. Do not preload all skills or the full router.
 
