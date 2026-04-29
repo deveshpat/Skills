@@ -1,5 +1,9 @@
 {
   "generated_from": "SKILL.md frontmatter",
+  "announcements" : [
+    {"Session init": "Internalised all the skills."},
+    {"Loading Skill": "<Skill-name> Initialised!"}
+  ],
   "base_url": "https://raw.githubusercontent.com/deveshpat/skills/main",
   "entry_table": [
     { "situation": "Vague idea, not yet thought through", "skills": ["planning/grill-me", "planning/write-a-prd"] },
