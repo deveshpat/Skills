@@ -211,7 +211,18 @@ registry.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCom
 // ---------------------------------------------------------------------------
 
 if (args.has("--write-router")) {
+  // Preserve manually-managed fields from existing router.json
+  let existing = {};
+  if (fs.existsSync(routerOutPath)) {
+    try { existing = JSON.parse(fs.readFileSync(routerOutPath, "utf8")); } catch {}
+  }
+  const GENERATED_KEYS = new Set(["generated_from", "base_url", "entry_table", "skills"]);
+  const manual = Object.fromEntries(
+    Object.entries(existing).filter(([k]) => !GENERATED_KEYS.has(k))
+  );
+
   const router = {
+    ...manual,                              // announcements, and anything else you add manually
     generated_from: "SKILL.md frontmatter",
     base_url: BASE_URL,
     entry_table: ENTRY_TABLE,
