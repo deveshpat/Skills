@@ -75,7 +75,7 @@ After the Brief, update BLUEPRINT.md (or equivalent) to match signals, then proc
 - Newest first. Verbatim output only — never paraphrase numbers or timestamps.
 - Header: `## Session N — <title> (YYYY-MM-DD)`
 
-**Coding agent prompts:**
+**Coding agent prompts:** (a `.md` file)
 - Self-contained (zero session history assumed).
 - Format: `## Context → ## Root Cause → ## Fix → ## Acceptance Criteria`
 
