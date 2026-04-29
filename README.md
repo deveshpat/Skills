@@ -17,7 +17,7 @@ Paste this as your system prompt or Custom Instructions, replacing the placehold
 [project-architect](https://raw.githubusercontent.com/deveshpat/skills/main/persona/project-architect/SKILL.md)
 
 # Skills
-https://raw.githubusercontent.com/deveshpat/skills/main/ROUTER.md
+https://raw.githubusercontent.com/deveshpat/skills/main/router.json
 Load relevant skills only — avoid fetching skills preemptively to preserve context.
 
 # Context
@@ -45,12 +45,12 @@ Fetch https://raw.githubusercontent.com/deveshpat/skills/main/AGENT_PROMPT.md
 and keep its workflows active for this session.
 ```
 
-### 2. ROUTER.md — on-demand registry
+### 2. ROUTER — on-demand registry
 
-[ROUTER.md](./ROUTER.md) is a concise skill registry: entry table, one-line trigger/not-trigger per skill, fetch URL, and chaining info. The LLM fetches it when it needs to look up a skill it does not already have.
+[ROUTER](./router.json) is a concise skill registry: entry table, one-line trigger/not-trigger per skill, fetch URL, and chaining info. The LLM fetches it when it needs to look up a skill it does not already have.
 
 ```
-Fetch https://raw.githubusercontent.com/deveshpat/skills/main/ROUTER.md
+Fetch https://raw.githubusercontent.com/deveshpat/skills/main/router.json
 when you need to look up a skill.
 ```
 
