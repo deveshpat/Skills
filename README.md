@@ -1,265 +1,305 @@
 # deveshpat/skills
 
-A portable, LLM-agnostic process library. Not prompts — repeatable workflows.
-Each skill defines *how* to do something, not just *what* to say. Drop it into any capable
-LLM and get consistent, structured output every time.
+A portable, LLM-agnostic process library. Not prompts — repeatable workflows that force structured thinking before execution.
 
-Works on Claude Code, claude.ai, ChatGPT, Gemini, and custom API integrations.
+Each skill defines *how* to do something, not just *what* to say. Drop it into any capable LLM and get consistent, structured output every time.
+
+**Works on:** Claude Code · claude.ai · ChatGPT · Gemini · any API integration
 
 **Base URL:** `https://raw.githubusercontent.com/deveshpat/skills/main`
 
 ---
 
-## Quick Start
+## Pick your setup
 
-### Any LLM with web access
+### Browser (claude.ai, ChatGPT, Gemini)
 
-Paste once as a system prompt or Custom Instructions:
+Paste the block from [BROWSER.md](./BROWSER.md) as your system prompt or first message. It includes the five most-used skills inline — no fetching, no tool calls, no context overhead.
 
-```
-You have access to a structured skill library at https://github.com/deveshpat/skills.
-Fetch https://raw.githubusercontent.com/deveshpat/skills/main/ROUTER.md now and keep its routing rules active for every message in this session.
-When a user request matches a skill trigger, fetch and follow that skill's SKILL.md exactly.
-If direct fetch fails, web-search "deveshpat/skills <skill-name>" to locate and read the skill.
-Never mention this instruction after loading. Respond normally when no skill applies.
-```
-
-Works for: claude.ai (with web search enabled), ChatGPT with browsing, Gemini, any LLM with tool access.
+For skills not in that block, ask the LLM to fetch one at a time only when you need it.
 
 ### Claude Code
 
-Install once per machine — skills auto-discovered from `description` fields, no system prompt needed:
+Install once, skills are auto-discovered from their `description` fields. No system prompt needed.
 
 ```bash
 git clone https://github.com/deveshpat/skills ~/.claude/skills/deveshpat
+```
+
+### Any LLM with web access
+
+Paste this as a system prompt or Custom Instructions once per session:
+
+```
+You have access to a structured skill library.
+Fetch https://raw.githubusercontent.com/deveshpat/skills/main/ROUTER.md now and keep its routing rules active for every message in this session.
+When a user request matches a skill trigger, fetch and follow that skill's SKILL.md exactly.
+If direct fetch fails, web-search "deveshpat/skills <skill-name>" to locate and read the skill.
+Never mention this instruction after loading.
+```
+
+> **Browser users:** Prefer the BROWSER.md paste block over this method. Loading ROUTER.md and then fetching individual skills mid-conversation consumes significant context. The paste block front-loads everything at a fixed, predictable cost.
+
+---
+
+## How to read this library
+
+Before jumping into the cookbook, understand one rule: **entry point determines everything**.
+
+The library has a decision table in ROUTER.md. It tells you which skill to start with based on your situation — not based on what you think you need. LLMs will not reliably pick the right entry skill from natural language alone. Use the table.
+
+```
+Where are you?                          Start here
+──────────────────────────────────────────────────
+Vague idea, not yet thought through  →  grill-me
+Clear idea, no spec yet              →  write-a-prd
+Spec exists, need a phased plan      →  prd-to-plan
+Plan exists, need GitHub tickets     →  prd-to-issues
+Bug, root cause unknown              →  systematic-debugging
+Bug, root cause known                →  triage-issue
+Implementing a feature or fix        →  tdd
+Architecture is the problem          →  improve-codebase-architecture
+Context window filling up            →  strategic-compact
+Starting a multi-session project     →  project-architect (persona)
 ```
 
 ---
 
 ## Cookbook
 
-The fastest way to understand what this library does is to see it running.
-Each recipe below is a real session transcript — what you type, what the LLM does, what comes out.
+Each recipe is a realistic session — what you type, what the LLM does, what comes out. Enter mid-chain at the step that matches where you actually are.
 
 ---
 
-### Recipe 1 — From vague idea to a queue of tickets
+### Recipe 1 — From fuzzy idea to a queue of tickets
 
-**Situation:** You have a rough idea but haven't thought it through. You want to go from fuzzy concept to a set of tickets you can actually start pulling.
+**When to use:** You have a rough concept but have not thought through the edge cases, constraints, or sequencing. You want to go from fuzzy → tickets you can actually pull.
+
+**Enter here if you have a PRD already:** skip to Recipe 2. If you have a plan already: skip to Recipe 3.
 
 ```
-You:  "I want to add real-time notifications to the app. Grill me."
+You:   "I want to add real-time notifications to the app. Grill me."
 
-LLM:  [grill-me activates]
+LLM:   [grill-me]
+       Identifies the strongest assumptions:
+       - Who receives notifications?
+       - What triggers one?
+       - Fire-and-forget or persistent unread state?
+       - Delivery targets: in-app, email, push, or all three?
+       - Retry behavior on delivery failure?
 
-      "Who receives notifications — all users, or scoped to roles?
-       What triggers one — system events, user actions, both?
-       Do unread notifications persist, or fire-and-forget?
-       What's the delivery target — in-app banner, email, push, or all three?
-       If delivery fails, do we retry? For how long?"
+       Attacks from multiple angles, separates fatal flaws from
+       fixable weaknesses, ends with: "Revise first — delivery
+       failure handling is a blocker, everything else is fixable."
 
-      [You answer each question. It follows up on gaps. No branch left unresolved.]
+You:   "Good points. Here are my answers: [answers]. Write a PRD."
 
-You:  "Good. Write a PRD."
+LLM:   [write-a-prd]
+       Synthesizes conversation into a structured PRD:
+       Problem Statement / Solution / User Stories /
+       Implementation Decisions / Testing Decisions /
+       Out of Scope / Open Questions (pre-filled from grill-me)
 
-LLM:  [write-a-prd activates — scans your codebase, maps existing patterns]
+You:   "Turn it into an implementation plan."
 
-      Files a structured GitHub issue:
-      Goals / Non-Goals / User Stories / Technical Constraints /
-      Open Questions (with your answers from grill-me pre-filled)
+LLM:   [prd-to-plan]
+       Phase 1 — Tracer bullet: DB schema + in-app banner for one
+                  event type, end-to-end in production
+       Phase 2 — Reliability: retry queue, delivery receipts
+       Phase 3 — Channels: email, push, preference management
 
-You:  "Turn it into a plan."
+       Each phase is independently demoable. No horizontal slices.
 
-LLM:  [prd-to-plan activates]
+You:   "Slice into GitHub tickets."
 
-      Phase 1 — Tracer bullet: DB schema + in-app banner for one event type,
-                 end-to-end in production
-      Phase 2 — Reliability: retry queue, delivery receipts, idempotency
-      Phase 3 — Channels: email, push; preference management
-
-You:  "Slice into tickets."
-
-LLM:  [prd-to-issues activates]
-
-      Emits 11 GitHub issues. Each has: title, context, acceptance criteria,
-      HITL/AFK annotation (can an agent run this unattended or not?).
-      Issues are independently grabbable — no hidden dependencies.
+LLM:   [prd-to-issues]
+       Creates 11 issues in dependency order.
+       Each has: title, what to build, acceptance criteria,
+       HITL/AFK annotation, blockers.
 ```
 
 **Chain:** `grill-me` → `write-a-prd` → `prd-to-plan` → `prd-to-issues` → `tdd`
 
-**When to enter mid-chain:** If you already have a PRD, start at `prd-to-plan`.
-If you already have a plan, start at `prd-to-issues`.
+---
+
+### Recipe 2 — You have a PRD, need a plan
+
+**When to use:** Requirements are settled. You want implementation phases before writing any code.
+
+```
+You:   "Here's the PRD [paste]. Break it into tracer-bullet phases."
+
+LLM:   [prd-to-plan]
+       Reads the PRD, explores the codebase (if available),
+       identifies durable architectural decisions first:
+       - Route structures
+       - Schema shape
+       - Key data models
+
+       Proposes phases as numbered list with user stories per phase.
+       Asks: "Does this granularity feel right?"
+
+You:   "Split Phase 2 into two — retry queue and receipts are
+        different enough to ship separately."
+
+LLM:   Revises, confirms, writes ./plans/notifications.md
+```
+
+**Enter here if:** PRD is already settled. Skip grill-me and write-a-prd entirely.
 
 ---
 
-### Recipe 2 — Bug with no error message
+### Recipe 3 — Bug with no error message
 
-**Situation:** Something is broken. There's no stack trace, you can't reproduce it locally,
-and you've already wasted two hours guessing.
+**When to use:** Something is broken, there is no stack trace, and guessing has already wasted time.
 
 ```
-You:  "Payment processing is silently failing for ~3% of mobile transactions.
-       No errors in Sentry. No 5xx in logs. Money just doesn't move."
+You:   "Payments are silently failing for ~3% of mobile
+        transactions. No errors in Sentry. Money just doesn't move."
 
-LLM:  [systematic-debugging activates]
+LLM:   [systematic-debugging]
+       Before hypothesizing, asks four questions:
+       1. Exact expected outcome?
+       2. Verbatim what actually happened?
+       3. When did it last work?
+       4. What changed in that window?
 
-      "Before we hypothesize — four questions:
-       1. What's the exact expected outcome? (payment object state, webhook fired?)
-       2. What actually happened? (give me verbatim — what do logs show, even if nothing?)
-       3. When did this last work correctly?
-       4. What changed in that window — deps, config, infra, code?"
+       [You answer. It identifies: nothing in app code changed,
+        but a payment SDK was auto-updated 6 days ago.]
 
-      [You answer. It identifies: nothing changed in app code, but a payment provider
-       SDK was auto-updated 6 days ago. Silent failures started 5 days ago.]
+       Environment isolation:
+       "What SDK version is in prod vs local? Pinned or floating?"
 
-      "Environment isolation check:
-       — What version of the SDK is in prod vs. local?
-       — Is the mobile SDK pinned or floating?"
+       [Floating. Prod is 3.2.1, local is 3.1.8.]
 
-      [Floating. Prod is on 3.2.1, local is on 3.1.8.]
+       Single hypothesis:
+       "SDK 3.2.1 changed the error contract for network timeouts
+        on mobile. Failures are swallowed, not thrown. Evidence:
+        version delta matches symptom onset exactly.
+        Test: force a timeout in staging on 3.2.1 and observe
+        the return value."
 
-      "Hypothesis: SDK 3.2.1 changed the error contract for network timeouts on mobile.
-       Failures are swallowed rather than thrown. Evidence: version delta matches symptom
-       onset. Test: force a timeout in staging on 3.2.1 and observe the return value."
+You:   "Confirmed. File the issue."
 
-You:  "Confirmed. File the issue."
-
-LLM:  [triage-issue activates]
-
-      Files GitHub issue: root cause (SDK regression, version pinned),
-      reproduction steps, TDD fix plan with acceptance criteria.
-      Ready to hand to an agent.
+LLM:   [triage-issue]
+       Files GitHub issue: root cause, reproduction steps,
+       TDD fix plan with acceptance criteria.
 ```
 
 **Chain:** `systematic-debugging` → `triage-issue` → `tdd`
 
-**Key rule:** `systematic-debugging` refuses to hypothesize until Q2 is answered verbatim.
-This is intentional — the discipline is the whole point.
+**Key discipline:** systematic-debugging refuses to hypothesize until Q2 is answered verbatim. That constraint is the whole point — it prevents the most common debugging mistake.
 
 ---
 
-### Recipe 3 — Code that's grown too wide
+### Recipe 4 — Architecture that has grown too wide
 
-**Situation:** A module that made sense at 200 lines is now 900 lines and three different
-things at once. You want a real restructuring plan, not just a surface cleanup.
+**When to use:** A module is doing too many things. You want a real restructuring plan, not a surface cleanup.
 
 ```
-You:  "The auth module is doing too much. auth.py is 900 lines.
-       It handles token validation, user sessions, OAuth flows, and
-       rate limiting. Improve the architecture."
+You:   "auth.py is 900 lines. It handles token validation, sessions,
+        OAuth flows, and rate limiting. Fix the architecture."
 
-LLM:  [improve-codebase-architecture activates]
+LLM:   [improve-codebase-architecture]
+       Explores the codebase first. Maps every responsibility
+       in auth.py. Identifies all callers and dependencies.
 
-      Explores the codebase. Maps every responsibility in auth.py.
-      Identifies which modules call into it and how.
+       Produces RFC with three options:
+       A — Extract rate limiting to middleware (minimal disruption)
+       B — Split into auth_tokens, auth_sessions, auth_oauth,
+           thin coordinator (deep modules approach)
+       C — Move OAuth to a separate service boundary
 
-      Produces an RFC:
+       Recommendation: Option B. Rationale: [trade-offs explicit].
 
-      Current pain: auth.py is a shallow catch-all — 4 concerns, no single
-      responsibility, every change risks breaking unrelated paths.
+You:   "Agreed on B. Write the coding-agent prompt."
 
-      Option A — Extract rate limiting to middleware layer (minimal disruption)
-      Option B — Split into auth_tokens, auth_sessions, auth_oauth, keep
-                 auth.py as a thin coordinator (deep modules approach)
-      Option C — Move OAuth entirely to a separate service boundary
+LLM:   [request-refactor-plan]
+       Self-contained prompt with:
+       ## Context
+       ## Root Cause
+       ## Proposed Change (module by module)
+       ## Acceptance Criteria
+       ## What Must Not Change
 
-      Recommendation: Option B. Rationale: [trade-offs laid out explicitly]
-
-You:  "Agreed on Option B. Write the agent prompt."
-
-LLM:  [request-refactor-plan activates]
-
-      Produces a self-contained coding-agent prompt:
-      ## Context
-      ## Root Cause
-      ## Proposed Change (module by module)
-      ## Acceptance Criteria
-      ## What Must Not Change (existing contracts)
-
-      Zero assumed context — paste it directly into Claude Code or any coding agent.
+       Paste directly into Claude Code or any coding agent.
 ```
 
 **Chain:** `improve-codebase-architecture` → `request-refactor-plan` → `tdd`
 
 ---
 
-### Recipe 4 — Keeping a multi-session project on track
+### Recipe 5 — Keeping a multi-session project from losing state
 
-**Situation:** You're working on a project across multiple sessions. Each new session
-starts cold. The `project-architect` persona stops you from losing state.
+**When to use:** You are working on something across multiple sessions and each new session starts cold.
+
+Load `project-architect` as a system prompt or Custom Instructions — not per-task. It governs the entire session.
 
 ```
-You:  [new session]
-      [pastes BLUEPRINT.md + latest signal files]
+You:   [new session]
+       [pastes BLUEPRINT.md + any terminal logs or signal files]
 
-LLM:  [project-architect persona activates — loaded as system prompt or Custom Instructions]
+LLM:   [project-architect — loaded as persona]
+       Reads everything available, reconciles signals against doc,
+       outputs one Session Brief:
 
-      ## Session State (as of 2025-04-26)
-      - Project is at: Phase 2, Round 3 — reliability layer
-      - Living document was: 2 steps behind signals
-        (signals show retry queue shipped; BLUEPRINT still listed it as pending)
-      - Blockers: none
-      - Immediate next step: implement delivery receipts (Issue #34)
+       ## Session Brief
+       State: Phase 2, Round 3 — reliability layer
+       Doc gap: 2 steps behind (retry queue shipped; BLUEPRINT
+                 still listed as pending — updating now)
+       Blocker: none
+       Next: implement delivery receipts (Issue #34)
 
-      BLUEPRINT.md updated to match. Proceeding.
+       BLUEPRINT.md updated. Proceeding.
 
-You:  "What did we decide about idempotency keys?"
+You:   "What did we decide about idempotency keys?"
 
-LLM:  Looks up the decision in BLUEPRINT — found under resolved decisions.
-      Gives you the exact agreed wording, not a paraphrase.
+LLM:   Finds the decision in BLUEPRINT under resolved decisions.
+       Gives exact agreed wording, not a paraphrase.
 ```
 
-**Load as:** system prompt or Custom Instructions — not per-task.
-**Requires:** a living BLUEPRINT.md (or equivalent master doc) that you keep in the repo.
+**What changed from old behavior:** The Session Brief is one output, not a sequence of questions. If files are missing, the LLM infers what it can and notes the gap in the Brief rather than asking for them one at a time.
 
 ---
 
-### Recipe 5 — Context window running low mid-session
+### Recipe 6 — Context window running low mid-session
 
-**Situation:** You're deep in a debugging session. The LLM starts repeating things.
-Context is almost full and you don't want to lose what you've figured out.
+**When to use:** You are deep in a session. The LLM starts repeating itself. You do not want to lose what you have figured out.
 
 ```
-You:  "Compact."
+You:   "Compact."
 
-LLM:  [strategic-compact activates]
+LLM:   [strategic-compact]
+       Audits the conversation:
+       Decisions: 3 items — root cause confirmed, SDK pinned,
+                  fix approach agreed
+       Noise dropped: 40 min of hypothesis/discard, repeated logs
+       In-flight: fix not yet written
 
-      Audits the conversation:
-      — Decisions (verbatim): 3 items — root cause confirmed, SDK pinned to 3.1.8,
-        fix approach agreed (handle null return from charge())
-      — Noise dropped: 40 minutes of hypothesis-and-discard, repeated log dumps
-      — In-flight: fix not yet written
+       # Session Compact — payments — 2025-04-29
 
-      Produces:
+       ## Decisions Made (verbatim)
+       - Root cause: SDK 3.2.1 swallows network timeout errors
+       - Fix: pin to 3.1.8; add null-check in charge() caller
+       - Acceptance: staging payment with forced timeout raises
+                     PaymentError
 
-      ─────────────────────────────────────────────────────
-      # Session Compact — payments — 2025-04-26
+       ## Current State
+       Fix not yet written. Issue #41 filed.
 
-      ## Decisions Made
-      - Root cause: SDK 3.2.1 swallows network timeout errors (returns null, no throw)
-      - Fix: pin SDK to 3.1.8 in requirements.txt; add null-check in charge() caller
-      - Acceptance: staging payment with forced timeout must raise PaymentError
+       ## Compressed Context
+       Mobile payment failures (~3%) traced to SDK regression
+       5 days ago. No app-code changes beyond null-check and pin.
 
-      ## Current State
-      - Fix not yet written. Issue #41 filed.
+       ## Immediate Next Step
+       Implement fix per Issue #41. Run existing payment tests.
 
-      ## Compressed Context
-      Mobile payment failures (~3%) traced to SDK regression introduced 5 days ago.
-      No app-code changes required beyond the null-check and version pin.
+       ## What to Discard
+       All hypothesis exploration prior to version delta discovery.
 
-      ## Immediate Next Step
-      Implement the fix per Issue #41. Run existing payment test suite.
-
-      ## What to Discard
-      All hypothesis exploration prior to version delta discovery.
-      ─────────────────────────────────────────────────────
-
-      Start a new session and paste this as your first message to resume here.
+       Start a new session and paste this compact as your first
+       message to resume exactly here.
 ```
-
-**Trigger:** Say "compact" or "running out of context" at any point.
-Also triggers automatically near the 80% context saturation mark.
 
 ---
 
@@ -269,167 +309,109 @@ Also triggers automatically near the 80% context saturation mark.
 
 | Skill | Triggers | Output |
 |---|---|---|
-| [grill-me](./planning/grill-me/SKILL.md) | "grill me", "stress-test this", "what am I missing" | Fully resolved decision tree |
-| [write-a-prd](./planning/write-a-prd/SKILL.md) | "write a PRD", "spec this out", "I have an idea for X" | GitHub issue: structured PRD |
-| [prd-to-plan](./planning/prd-to-plan/SKILL.md) | "turn this PRD into a plan", "break into phases" | Phased tracer-bullet plan |
-| [prd-to-issues](./planning/prd-to-issues/SKILL.md) | "slice into tickets", "create GitHub issues" | Independent GitHub issues + HITL/AFK tags |
+| [grill-me](./planning/grill-me/SKILL.md) | "grill me", "stress-test this", "what am I missing" | Go/no-go with risks and fixes |
+| [write-a-prd](./planning/write-a-prd/SKILL.md) | "write a PRD", "spec this out" | Structured PRD |
+| [prd-to-plan](./planning/prd-to-plan/SKILL.md) | "turn this into a plan", "tracer bullets" | Phased implementation plan |
+| [prd-to-issues](./planning/prd-to-issues/SKILL.md) | "slice into tickets", "create GitHub issues" | GitHub issues with HITL/AFK tags |
 
 ### Architecture
 
 | Skill | Triggers | Output |
 |---|---|---|
-| [improve-codebase-architecture](./architecture/improve-codebase-architecture/SKILL.md) | "architecture review", "this file is too long", "too much duplication" | RFC with options + recommendation |
-| [design-an-interface](./architecture/design-an-interface/SKILL.md) | "design an interface", "give me API options" | ≥2 radically different designs + trade-offs |
-| [request-refactor-plan](./architecture/request-refactor-plan/SKILL.md) | "write the agent prompt", "generate a coding agent prompt" | Self-contained coding-agent prompt |
+| [improve-codebase-architecture](./architecture/improve-codebase-architecture/SKILL.md) | "architecture review", "too long", "too much duplication" | RFC with options + recommendation |
+| [design-an-interface](./architecture/design-an-interface/SKILL.md) | "design an interface", "give me API options" | ≥2 radically different designs |
+| [request-refactor-plan](./architecture/request-refactor-plan/SKILL.md) | "write the agent prompt", "coding agent prompt" | Self-contained coding-agent prompt |
 
 ### Development
 
 | Skill | Triggers | Output |
 |---|---|---|
 | [tdd](./development/tdd/SKILL.md) | "implement X", "build this feature", "fix this bug" | Working code via red→green→refactor |
-| [triage-issue](./development/triage-issue/SKILL.md) | "find the root cause", "investigate this bug" | GitHub issue: root cause + TDD fix plan |
-| [git-guardrails](./development/git-guardrails/SKILL.md) | "protect my git", "prevent accidental push" | Claude Code hooks blocking dangerous commands |
-
-### Tooling
-
-| Skill | Triggers | Output |
-|---|---|---|
-| [write-a-skill](./tooling/write-a-skill/SKILL.md) | "create a skill for X", "write a new skill" | New SKILL.md with correct structure |
-| [setup-pre-commit](./tooling/setup-pre-commit/SKILL.md) | "add Husky", "format on commit", "set up pre-commit" | Configured Husky + lint-staged pipeline |
-| [ubiquitous-language](./tooling/ubiquitous-language/SKILL.md) | "build a glossary", "extract domain language" | DDD-style glossary from conversation |
-| [edit-article](./tooling/edit-article/SKILL.md) | "edit this article", "tighten this prose" | Restructured, tightened writing |
-| [obsidian-vault](./tooling/obsidian-vault/SKILL.md) | "search my notes", "create a note", "find in Obsidian" | Note operations with wikilinks |
+| [triage-issue](./development/triage-issue/SKILL.md) | "find the root cause", "investigate this bug" | GitHub issue with TDD fix plan |
+| [git-guardrails](./development/git-guardrails/SKILL.md) | "protect my git", "prevent accidental push" | Claude Code hooks |
 
 ### Session
 
 | Skill | Triggers | Output |
 |---|---|---|
-| [strategic-compact](./session/strategic-compact/SKILL.md) | "compact", context ≥ 80% | ≤600-word session compact for clean handoff |
 | [systematic-debugging](./session/systematic-debugging/SKILL.md) | "failing silently", "can't reproduce", "it worked before" | Single testable root-cause hypothesis |
+| [strategic-compact](./session/strategic-compact/SKILL.md) | "compact", context ≥ 80% | ≤600-word handoff compact |
+| [living-doc-reconciler](./session/living-doc-reconciler/SKILL.md) | "update the blueprint", "reconcile the doc" | Reconciled living document |
 
-### Persona
+### Persona (load as system prompt, not per-task)
 
-| Skill | Triggers | Usage |
+| Skill | When to load | Effect |
 |---|---|---|
-| [project-architect](./persona/project-architect/SKILL.md) | Session start with a living doc, "architect mode", "resume the project" | Load as system prompt — governs the whole session |
+| [project-architect](./persona/project-architect/SKILL.md) | Any multi-session project with a BLUEPRINT.md | Single-output Session Brief, 95% certainty gate |
+| [ml-engineer](./persona/ml-engineer/SKILL.md) | ML training sessions | Hard evidence gates before any training claim |
+
+### Tooling
+
+| Skill | Triggers | Output |
+|---|---|---|
+| [write-a-skill](./tooling/write-a-skill/SKILL.md) | "create a skill for X" | New SKILL.md with correct structure |
+| [setup-pre-commit](./tooling/setup-pre-commit/SKILL.md) | "add Husky", "format on commit" | Configured Husky + lint-staged |
+| [ubiquitous-language](./tooling/ubiquitous-language/SKILL.md) | "build a glossary", "extract domain language" | DDD-style glossary |
+| [edit-article](./tooling/edit-article/SKILL.md) | "edit this article", "tighten this prose" | Restructured, tightened writing |
+| [obsidian-vault](./tooling/obsidian-vault/SKILL.md) | "search my notes", "create a note in Obsidian" | Note operations with wikilinks |
+| [skill-audit](./tooling/skill-audit/SKILL.md) | "audit this skills repo" | Defects + patch order |
 
 ---
 
 ## Pipeline
 
-Enter at the stage that matches where you are. Complete each skill before starting the next.
+Enter at the stage that matches where you are. The table in ROUTER.md is the authoritative entry rule.
 
 ```
 vague idea
     │
     ▼
-grill-me ──────────────────────────────────────────────────┐
-    │                                                       │
-    ▼                                                (skip if you already
-write-a-prd                                           have a clear spec)
+grill-me ──────────────────────────────────── (skip if idea is clear)
     │
     ▼
-prd-to-plan
+write-a-prd ───────────────────────────────── (skip if PRD exists)
+    │
+    ▼
+prd-to-plan ───────────────────────────────── (skip if plan exists)
     │
     ▼
 prd-to-issues
     │
     ▼
-   tdd ◄──── triage-issue ◄──── systematic-debugging
-                                 (unknown root cause)
+tdd ◄──── triage-issue ◄──── systematic-debugging (unknown root cause)
+
 
 improve-codebase-architecture ──► request-refactor-plan ──► tdd
 ```
 
 ---
 
-## Advanced Usage
-
-### Export for other platforms
-
-```bash
-# Generate an OpenAI system prompt for a single skill
-node scripts/export.js --skill grill-me --target openai
-
-# Export all skills for Gemini Gem instructions
-node scripts/export.js --all --target gemini --out ./dist/
-
-# Validate all skills without exporting
-node scripts/export.js --all --validate
-```
-
-Supported targets: `claude`, `openai`, `gemini`, `ouroboros`, `all`.
-
-### Paste ROUTER.md directly
-
-For LLMs without web access, paste [ROUTER.md](./ROUTER.md) as the system prompt instead of
-the Quick Start snippet. Same behaviour — the trigger registry is inline, no fetch required.
-
-### Custom API
-
-```python
-import requests
-BASE = "https://raw.githubusercontent.com/deveshpat/skills/main"
-def load_skill(name: str) -> str:
-    from router import SKILL_URLS   # parsed from ROUTER.md URL index
-    return requests.get(SKILL_URLS[name]).text
-```
-
----
-
 ## Writing Your Own Skills
 
-Skills follow [SKILL_TEMPLATE.md](./SKILL_TEMPLATE.md). Two types:
+Skills follow [SKILL_TEMPLATE.md](./SKILL_TEMPLATE.md). Use `write-a-skill` to bootstrap.
 
-**Original** — full workflow content written directly in the SKILL.md body.
-See [`persona/project-architect`](./persona/project-architect/SKILL.md) as a reference.
+The `description` frontmatter field is the trigger contract — it is what auto-discovery and ROUTER.md use to match skills. Write it precisely: what the skill solves, exact trigger phrases, and exact counter-cases that do not trigger it.
 
-**Adopted** — stub pointing at an upstream source.
-See [`planning/grill-me`](./planning/grill-me/SKILL.md). Install upstream content with:
-```bash
-npx skills@latest add <source>/<skill-name>
-```
-
-The `description` frontmatter field is the trigger contract for both Claude Code auto-discovery
-and the ROUTER.md match string. Write it precisely: what the skill solves, exact phrases that
-trigger it, and exact counter-cases that do not.
-
-Use `write-a-skill` to bootstrap either type.
+Two types:
+- **Original** — full workflow content in the SKILL.md body. See `persona/project-architect` as reference.
+- **Adopted** — stub pointing at an upstream source. See `planning/grill-me`.
 
 ---
 
-## Credits & Acknowledgements
+## Credits
 
-**[deveshpat](https://github.com/deveshpat)** — original skills in this repo:
-`project-architect` (session startup ritual, documentation standards, 95% certainty gate)
-and `ml-engineer` (ML-specific persona for training runs, experiment tracking, and GPU workflows).
+**[deveshpat](https://github.com/deveshpat)** — `project-architect`, `ml-engineer`, `living-doc-reconciler`, `git-staging-guardian`, `refactor-verifier`, `artifact-classifier`, `skill-audit`
 
-**[Matt Pocock](https://github.com/mattpocock/skills)** — the skills-as-workflows methodology,
-the `description`-driven auto-select trigger contract, and the upstream source for `grill-me`,
-`write-a-prd`, `prd-to-plan`, `prd-to-issues`, `tdd`, `triage-issue`, `git-guardrails`,
-`write-a-skill`, `setup-pre-commit`, `ubiquitous-language`, `edit-article`, and `obsidian-vault`.
+**[Matt Pocock](https://github.com/mattpocock/skills)** — the skills-as-workflows methodology, description-driven auto-select trigger contract, and upstream source for `grill-me`, `write-a-prd`, `prd-to-plan`, `prd-to-issues`, `tdd`, `triage-issue`, `git-guardrails`, `write-a-skill`, `setup-pre-commit`, `ubiquitous-language`, `edit-article`, `obsidian-vault`
 
-**[Affaan M](https://github.com/affaan-m/everything-claude-code)** — `strategic-compact`.
-The strategic context compaction skill originates from `everything-claude-code`, an Anthropic
-hackathon–winning agent harness (55k+ stars) covering skills, hooks, memory, and security
-across Claude Code, Cursor, Codex, and OpenCode.
+**[Affaan M](https://github.com/affaan-m/everything-claude-code)** — `strategic-compact`, from the everything-claude-code Anthropic hackathon project
 
-**[Jesse Vincent / obra](https://github.com/obra/superpowers)** — `systematic-debugging`.
-The base methodology (root-cause-first, backward call-stack tracing, environment isolation
-before hypothesising) comes from `obra/superpowers` (~40k stars). The ML-specific patterns
-in this repo — GPU device verification, distributed deadlock detection, checkpoint hash
-validation — are adaptations specific to deveshpat/skills.
+**[Jesse Vincent / obra](https://github.com/obra/superpowers)** — `systematic-debugging` base methodology
 
-**[John Ousterhout](https://web.stanford.edu/~ouster/cgi-bin/aposd.php)** — Deep Modules and
-Design-It-Twice from *A Philosophy of Software Design*. Both principles are load-bearing in
-`improve-codebase-architecture` and `design-an-interface`.
+**[John Ousterhout](https://web.stanford.edu/~ouster/cgi-bin/aposd.php)** — Deep Modules and Design-It-Twice from *A Philosophy of Software Design*
 
-**[Dave Thomas & Andy Hunt](https://pragprog.com/titles/tppp/the-pragmatic-programmer/)** —
-Tracer Bullet development from *The Pragmatic Programmer*. Drives the vertical-slice model
-in `prd-to-plan` and `prd-to-issues`.
+**[Dave Thomas & Andy Hunt](https://pragprog.com/titles/tppp/the-pragmatic-programmer/)** — Tracer Bullet development from *The Pragmatic Programmer*
 
-**[Kent Beck](https://www.kentbeck.com/)** — Red → Green → Refactor from *Test-Driven Development
-by Example*. Structures `tdd` and anchors `triage-issue`'s fix planning.
+**[Kent Beck](https://www.kentbeck.com/)** — Red → Green → Refactor from *Test-Driven Development by Example*
 
-**[Eric Evans](https://www.domainlanguage.com/)** — Ubiquitous Language and bounded contexts
-from *Domain-Driven Design*. Directly underpins `ubiquitous-language`.
+**[Eric Evans](https://www.domainlanguage.com/)** — Ubiquitous Language and bounded contexts from *Domain-Driven Design*
