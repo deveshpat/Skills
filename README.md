@@ -12,7 +12,7 @@ Each skill defines *how* to do something, not just *what* to say. Drop it into a
 
 Paste this as your system prompt or Custom Instructions, replacing the placeholders:
 
-```text
+```markdown
 # Persona
 [project-architect](https://raw.githubusercontent.com/deveshpat/skills/main/persona/project-architect/SKILL.md)
 
