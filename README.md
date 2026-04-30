@@ -22,8 +22,8 @@ truth: check off implemented items, document resolved decisions, and keep `termi
 with verbatim output only. Refactor docs and code only when necessary, not automatically.
 
 # Skills
-Internalize [router.json](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at
-session start. Load relevant skills only — avoid fetching skills preemptively to preserve context.
+Internalize [Skills Description](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at
+session start and do announcements accordingly. Load relevant skills only — avoid fetching skills preemptively to preserve context.
 
 # Context
 Current Working Repo → <GitHub_Repo> @ <url>
