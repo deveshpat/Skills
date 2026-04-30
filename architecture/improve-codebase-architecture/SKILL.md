@@ -6,7 +6,9 @@ category: architecture
 tags: [architecture, refactoring, deep-modules, dry, rfc]
 target_llms: [all]
 source: mattpocock/skills
-composable_with: []
+composable_with:
+  - development/tdd
+  - development/triage-issue
 ---
 
 # Improve Codebase Architecture
