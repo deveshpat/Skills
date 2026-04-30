@@ -11,7 +11,6 @@ target_llms: [all]
 source: original
 composable_with:
   - tooling/write-a-skill
-  - architecture/request-refactor-plan
 ---
 
 # Skill Audit

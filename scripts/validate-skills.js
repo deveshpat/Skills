@@ -200,15 +200,15 @@ if (args.has("--write-router")) {
   if (fs.existsSync(routerOutPath)) {
     try { existing = JSON.parse(fs.readFileSync(routerOutPath, "utf8")); } catch {}
   }
-  const GENERATED_KEYS = new Set(["generated_from", "base_url", "entry_table", "skills"]);
+  const GENERATED_KEYS = new Set(["generated_from", "base_url", "skills"]);
   const manual = Object.fromEntries(
     Object.entries(existing).filter(([k]) => !GENERATED_KEYS.has(k))
   );
 
   const router = {
-    ...manual,                              // announcements, and anything else you add manually
     generated_from: "SKILL.md frontmatter",
     base_url: BASE_URL,
+    ...manual,
     skills: registry,
   };
   fs.mkdirSync(path.dirname(routerOutPath), { recursive: true });

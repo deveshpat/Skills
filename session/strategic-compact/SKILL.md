@@ -16,8 +16,7 @@ inputs:
 outputs:
   - name: compact document
     format: markdown
-composable_with:
-  - persona/project-architect
+composable_with: []
 ---
 
 # Strategic Compact

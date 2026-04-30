@@ -13,9 +13,7 @@ tags: [wiki, knowledge-base, synthesize, compounding-knowledge, session-continui
 target_llms: [all]
 source: original
 composable_with:
-  - session/living-doc-reconciler
   - session/strategic-compact
-  - persona/project-architect
 ---
 
 # LLM Wiki

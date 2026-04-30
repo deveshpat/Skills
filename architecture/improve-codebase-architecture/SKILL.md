@@ -6,8 +6,7 @@ category: architecture
 tags: [architecture, refactoring, deep-modules, dry, rfc]
 target_llms: [all]
 source: mattpocock/skills
-composable_with:
-  - architecture/request-refactor-plan
+composable_with: []
 ---
 
 # Improve Codebase Architecture

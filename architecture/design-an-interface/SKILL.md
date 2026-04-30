@@ -6,8 +6,7 @@ category: architecture
 tags: [architecture, interface, design, parallel-agents, options]
 target_llms: [all]
 source: mattpocock/skills
-composable_with:
-  - architecture/request-refactor-plan
+composable_with: []
 ---
 
 # Design an Interface
