@@ -14,19 +14,38 @@ Paste this as your system prompt or Custom Instructions, replacing the placehold
 
 ```markdown
 # Persona
-[project-architect](https://raw.githubusercontent.com/deveshpat/skills/main/persona/project-architect/SKILL.md)
+You are the Project Architect. Before any implementation, interrogate proposals with probing questions
+and stress-test them — do not proceed until you are 95% certain the approach is viable and will work
+in practice. Generate coding-agent prompts as self-contained `.md` files structured as:
+Context → Root Cause → Fix → Acceptance Criteria. Maintain `BLUEPRINT.md` as the single source of
+truth: check off implemented items, document resolved decisions, and keep `terminal_log.md` updated
+with verbatim output only. Refactor docs and code only when necessary, not automatically.
 
 # Skills
-Internalize [router.json](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at session start and do mentioned announcements accordingly. 
-Load relevant skills only — avoid fetching skills preemptively to preserve context.
+Internalize [router.json](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at
+session start. Load relevant skills only — avoid fetching skills preemptively to preserve context.
 
 # Context
 Current Working Repo → <GitHub_Repo> @ <url>
 ```
 
-**`# Persona`** — Optional. Load a persona skill as a standing role for the session (e.g. `project-architect` for multi-session projects, `ml-engineer` for training runs). Omit for one-off tasks.
+**`# Persona`** — Optional. The block above is the Project Architect. For ML training sessions, replace it with the ML Engineer persona below. Omit entirely for one-off tasks.
 
-**`# Skills`** — Points the LLM to the router. It fetches router.json & internalizes at the session start and from there fetches individual skill URLs only when a trigger matches. For the five most-used skills without any fetching, use [AGENT.md](./AGENT.md) instead.
+<details>
+<summary>ML Engineer persona</summary>
+
+```markdown
+# Persona
+You are the Lead Implementation Engineer. Validate every approach before writing code — do not begin
+until you are 95% certain the required approach is viable, mathematically sound, and technically
+functional. Write well-structured Python files that follow industry best practices and leverage
+established libraries. Do not reinvent core components from scratch. Prune redundant code and
+enforce clean naming conventions, but only when necessary — not automatically on every prompt.
+```
+
+</details>
+
+**`# Skills`** — Points the LLM to the router. It fetches router.json at session start and from there fetches individual skill URLs only when a trigger matches.
 
 **`# Context`** — Ground the LLM in your repo. Replace with your actual repo name and URL.
 
@@ -38,8 +57,6 @@ Current Working Repo → <GitHub_Repo> @ <url>
 
 [AGENT.md](./AGENT.md) embeds the five most-used skills inline. Paste it (or instruct the LLM to fetch it) when you want `grill-me`, `tdd`, `systematic-debugging`, `prd-to-plan`, and `strategic-compact` immediately available at a fixed, predictable context cost.
 
-For all other skills, AGENT_PROMPT.md points to router.json.
-
 ```
 Fetch https://raw.githubusercontent.com/deveshpat/skills/main/AGENT.md
 and keep its workflows active for this session.
@@ -47,12 +64,7 @@ and keep its workflows active for this session.
 
 ### 2. ROUTER — on-demand registry
 
-[ROUTER](./router.json) is a concise skill registry: entry table, one-line trigger/not-trigger per skill, fetch URL, and chaining info. The LLM fetches it when it needs to look up a skill it does not already have.
-
-```
-Fetch https://raw.githubusercontent.com/deveshpat/skills/main/router.json
-when you need to look up a skill.
-```
+[router.json](./router.json) is a concise skill registry: entry table, one-line trigger/not-trigger per skill, fetch URL, and chaining info. The LLM fetches it when it needs to look up a skill it does not already have.
 
 ### Claude Code
 
@@ -80,8 +92,6 @@ Bug, root cause known                →  triage-issue
 Implementing a feature or fix        →  tdd
 Architecture is the problem          →  improve-codebase-architecture
 Context window filling up            →  strategic-compact
-Starting a multi-session project     →  project-architect (persona)
-ML training / GPU / experiments      →  ml-engineer (persona)
 ```
 
 ---
@@ -175,35 +185,20 @@ LLM:   [triage-issue]
 You:   "auth.py is 900 lines. Fix the architecture."
 
 LLM:   [improve-codebase-architecture]
-       Explores codebase. Maps responsibilities. Produces RFC with 3 options.
-       Recommends Option B with explicit trade-offs.
+       Explores codebase. Maps responsibilities. Surfaces deepening candidates.
+       Walks through the design with you. Crystallises decisions into CONTEXT.md.
 
-You:   "Agreed on B. Write the coding-agent prompt."
+You:   "Agreed on that direction. Write the coding-agent prompt."
 
-LLM:   [request-refactor-plan]
-       Self-contained prompt: Context → Root Cause → Fix → Acceptance Criteria.
+LLM:   Produces a self-contained .md: Context → Root Cause → Fix → Acceptance Criteria.
        Paste directly into Claude Code or any coding agent.
 ```
 
-**Chain:** `improve-codebase-architecture` → `request-refactor-plan` → `tdd`
+**Chain:** `improve-codebase-architecture` → `tdd`
 
 ---
 
-### Recipe 5 — Multi-session project
-
-Load `project-architect` as your persona (in the system prompt, not per-task).
-
-```
-You:   [new session — pastes BLUEPRINT.md + signal files]
-
-LLM:   [project-architect]
-       Produces one Session Brief: state, doc gap, blocker, next action.
-       Updates BLUEPRINT.md to match signals. Proceeds.
-```
-
----
-
-### Recipe 6 — Context window running low
+### Recipe 5 — Context window running low
 
 ```
 You:   "Compact."
@@ -230,9 +225,8 @@ LLM:   [strategic-compact]
 
 | Skill | Triggers | Output |
 |---|---|---|
-| [improve-codebase-architecture](./architecture/improve-codebase-architecture/SKILL.md) | "architecture review", "too long", "too much duplication" | RFC with options + recommendation |
+| [improve-codebase-architecture](./architecture/improve-codebase-architecture/SKILL.md) | "architecture review", "too long", "too much duplication" | Deep-module candidates + design grilling |
 | [design-an-interface](./architecture/design-an-interface/SKILL.md) | "design an interface", "give me API options" | ≥2 radically different designs |
-| [request-refactor-plan](./architecture/request-refactor-plan/SKILL.md) | "write the agent prompt", "coding agent prompt" | Self-contained coding-agent prompt |
 
 ### Development
 
@@ -242,7 +236,6 @@ LLM:   [strategic-compact]
 | [triage-issue](./development/triage-issue/SKILL.md) | "find the root cause", "investigate this bug" | GitHub issue with TDD fix plan |
 | [git-guardrails](./development/git-guardrails/SKILL.md) | "protect my git", "prevent accidental push" | Claude Code hooks |
 | [git-staging-guardian](./development/git-staging-guardian/SKILL.md) | "commit", "stage these changes" | Path-verified staging |
-| [refactor-verifier](./development/refactor-verifier/SKILL.md) | after any refactor | Wiring verification table |
 
 ### Session
 
@@ -250,14 +243,6 @@ LLM:   [strategic-compact]
 |---|---|---|
 | [systematic-debugging](./session/systematic-debugging/SKILL.md) | "failing silently", "can't reproduce", "it worked before" | Single testable root-cause hypothesis |
 | [strategic-compact](./session/strategic-compact/SKILL.md) | "compact", context ≥ 80% | ≤600-word handoff compact |
-| [living-doc-reconciler](./session/living-doc-reconciler/SKILL.md) | "update the blueprint", "reconcile the doc" | Reconciled living document |
-
-### Persona — load as system prompt, not per-task
-
-| Skill | When to load | Effect |
-|---|---|---|
-| [project-architect](./persona/project-architect/SKILL.md) | Any multi-session project with a BLUEPRINT.md | Single-output Session Brief, 95% certainty gate |
-| [ml-engineer](./persona/ml-engineer/SKILL.md) | ML training sessions | Hard evidence gates before any training claim |
 
 ### Tooling
 
@@ -269,7 +254,7 @@ LLM:   [strategic-compact]
 | [ubiquitous-language](./tooling/ubiquitous-language/SKILL.md) | "build a glossary", "extract domain language" | DDD-style glossary |
 | [edit-article](./tooling/edit-article/SKILL.md) | "edit this article", "tighten this prose" | Restructured, tightened writing |
 | [obsidian-vault](./tooling/obsidian-vault/SKILL.md) | "search my notes", "create a note in Obsidian" | Note operations with wikilinks |
-| [artifact-classifier](./tooling/artifact-classifier/SKILL.md) | before cleanup / deletion | File classification table |
+| [llm-wiki](./tooling/llm-wiki/SKILL.md) | "set up a wiki", "distill this session", "what do we know about X" | Persistent synthesized knowledge base |
 
 ---
 
@@ -294,7 +279,7 @@ prd-to-issues
 tdd ◄──── triage-issue ◄──── systematic-debugging
 
 
-improve-codebase-architecture ──► request-refactor-plan ──► tdd
+improve-codebase-architecture ──► tdd
 ```
 
 ---
@@ -303,19 +288,17 @@ improve-codebase-architecture ──► request-refactor-plan ──► tdd
 
 Skills follow [SKILL_TEMPLATE.md](./SKILL_TEMPLATE.md). Use `write-a-skill` to bootstrap.
 
-The `description` frontmatter field is the trigger contract — it is what Claude Code auto-discovery and ROUTER.md use to match skills. Write it precisely: what the skill solves, exact trigger phrases, and exact counter-cases.
+The `description` frontmatter field is the trigger contract — it is what Claude Code auto-discovery and router.json use to match skills. Write it precisely: what the skill solves, exact trigger phrases, and exact counter-cases.
 
 Validate and regenerate the registry:
 
 ```bash
-node scripts/validate-skills.js --write-registry
+node scripts/validate-skills.js --write-router
 ```
 
 ---
 
 ## Credits
-
-**[deveshpat](https://github.com/deveshpat)** — `project-architect`, `ml-engineer`, `living-doc-reconciler`, `git-staging-guardian`, `refactor-verifier`, `artifact-classifier`, `skill-audit`
 
 **[Matt Pocock](https://github.com/mattpocock/skills)** — the skills-as-workflows methodology, description-driven auto-select trigger contract, and upstream source for `grill-me`, `write-a-prd`, `prd-to-plan`, `prd-to-issues`, `tdd`, `triage-issue`, `git-guardrails`, `write-a-skill`, `setup-pre-commit`, `ubiquitous-language`, `edit-article`, `obsidian-vault`
 

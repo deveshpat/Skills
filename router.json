@@ -58,30 +58,10 @@
       ]
     },
     {
-      "situation": "Architecture direction agreed, need coding-agent prompt",
-      "skills": [
-        "architecture/request-refactor-plan"
-      ]
-    },
-    {
       "situation": "Context window >= 80% or 'compact'",
       "skills": [
         "session/strategic-compact"
       ]
-    },
-    {
-      "situation": "Multi-session project with BLUEPRINT.md",
-      "skills": [
-        "persona/project-architect"
-      ],
-      "note": "load as persona"
-    },
-    {
-      "situation": "ML training / GPU workflows / experiment tracking",
-      "skills": [
-        "persona/ml-engineer"
-      ],
-      "note": "load as persona"
     }
   ],
   "skills": [
@@ -103,9 +83,7 @@
       "source": "mattpocock/skills",
       "aliases": [],
       "upstream": null,
-      "chains_to": [
-        "architecture/request-refactor-plan"
-      ],
+      "chains_to": [],
       "path": "architecture/design-an-interface/SKILL.md",
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/architecture/design-an-interface/SKILL.md"
     },
@@ -127,36 +105,9 @@
       "source": "mattpocock/skills",
       "aliases": [],
       "upstream": null,
-      "chains_to": [
-        "architecture/request-refactor-plan"
-      ],
+      "chains_to": [],
       "path": "architecture/improve-codebase-architecture/SKILL.md",
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/architecture/improve-codebase-architecture/SKILL.md"
-    },
-    {
-      "slug": "architecture/request-refactor-plan",
-      "name": "request-refactor-plan",
-      "category": "architecture",
-      "description": "Generate a precise coding-agent prompt for a refactor after architecture direction is known. Use when the user wants an implementation prompt, not when they want you to perform the refactor directly.",
-      "tags": [
-        "refactor",
-        "prompt",
-        "coding-agent",
-        "architecture"
-      ],
-      "target_llms": [
-        "claude-code",
-        "chatgpt"
-      ],
-      "source": "unknown",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [
-        "architecture/improve-codebase-architecture",
-        "development/tdd"
-      ],
-      "path": "architecture/request-refactor-plan/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/architecture/request-refactor-plan/SKILL.md"
     },
     {
       "slug": "development/git-guardrails",
@@ -209,31 +160,6 @@
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/development/git-staging-guardian/SKILL.md"
     },
     {
-      "slug": "development/refactor-verifier",
-      "name": "refactor-verifier",
-      "category": "development",
-      "description": "Verify that a refactor changed the intended entrypoints and behavior, not merely added scaffolding. Use after architecture or implementation refactors to prove old paths call new modules and tests cover the new seams. Do NOT use for brand-new features without a refactor.",
-      "tags": [
-        "refactor",
-        "verification",
-        "entrypoints",
-        "tests",
-        "scaffolding"
-      ],
-      "target_llms": [
-        "all"
-      ],
-      "source": "original",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [
-        "development/tdd",
-        "development/git-staging-guardian"
-      ],
-      "path": "development/refactor-verifier/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/development/refactor-verifier/SKILL.md"
-    },
-    {
       "slug": "development/tdd",
       "name": "tdd",
       "category": "development",
@@ -282,58 +208,6 @@
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/development/triage-issue/SKILL.md"
     },
     {
-      "slug": "persona/ml-engineer",
-      "name": "ml-engineer",
-      "category": "persona",
-      "description": "Hands-on implementer persona for ML workflows: researches approaches, writes training code, runs experiments, validates results with hard evidence gates (GPU verification, reproducible runs, checkpoint validation, metrics-backed claims). Receives direction from project-architect; does not govern decisions or maintain BLUEPRINT. Load as system prompt for ML sessions. Do NOT invoke as a one-off task skill.",
-      "tags": [
-        "ml",
-        "training",
-        "gpu",
-        "reproducibility",
-        "checkpoints",
-        "experiment-tracking"
-      ],
-      "target_llms": [
-        "all"
-      ],
-      "source": "original",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [
-        "development/tdd",
-        "session/living-doc-reconciler"
-      ],
-      "path": "persona/ml-engineer/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/persona/ml-engineer/SKILL.md"
-    },
-    {
-      "slug": "persona/project-architect",
-      "name": "project-architect",
-      "category": "persona",
-      "description": "Project Architect and Documentation Manager for any multi-session project with a living BLUEPRINT.md or equivalent master document. Governs session startup ritual, documentation standards, decision-making gate, and signal reconciliation. Use at the START of every session on a persistent project. Triggers: \"architect mode\", \"resume the project\", \"what's the status\", or any session beginning with a pasted BLUEPRINT/status document. Do NOT use for one-off tasks with no persistent project state.",
-      "tags": [
-        "architect",
-        "project-management",
-        "documentation",
-        "sessions",
-        "status"
-      ],
-      "target_llms": [
-        "all"
-      ],
-      "source": "original",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [
-        "architecture/improve-codebase-architecture",
-        "architecture/request-refactor-plan",
-        "planning/grill-me"
-      ],
-      "path": "persona/project-architect/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/persona/project-architect/SKILL.md"
-    },
-    {
       "slug": "planning/grill-me",
       "name": "grill-me",
       "category": "planning",
@@ -348,12 +222,11 @@
         "chatgpt",
         "claude-code"
       ],
-      "source": "unknown",
+      "source": "mattpocock/skills",
       "aliases": [],
       "upstream": null,
       "chains_to": [
         "planning/write-a-prd",
-        "planning/prd-to-plan",
         "tooling/write-a-skill"
       ],
       "path": "planning/grill-me/SKILL.md",
@@ -433,32 +306,6 @@
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/planning/write-a-prd/SKILL.md"
     },
     {
-      "slug": "session/living-doc-reconciler",
-      "name": "living-doc-reconciler",
-      "category": "session",
-      "description": "Reconcile project living documents with logs, commits, checkpoints, issues, and other signals before declaring project state. Use when resuming projects, compacting sessions, or updating status docs. Do NOT use for generic summarization without durable project state.",
-      "tags": [
-        "living-docs",
-        "status",
-        "reconciliation",
-        "logs",
-        "project-state"
-      ],
-      "target_llms": [
-        "all"
-      ],
-      "source": "original",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [
-        "persona/project-architect",
-        "persona/ml-engineer",
-        "session/strategic-compact"
-      ],
-      "path": "session/living-doc-reconciler/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/session/living-doc-reconciler/SKILL.md"
-    },
-    {
       "slug": "session/strategic-compact",
       "name": "strategic-compact",
       "category": "session",
@@ -476,9 +323,7 @@
       "source": "community/affaan-m/everything-claude-code",
       "aliases": [],
       "upstream": null,
-      "chains_to": [
-        "persona/project-architect"
-      ],
+      "chains_to": [],
       "path": "session/strategic-compact/SKILL.md",
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/session/strategic-compact/SKILL.md"
     },
@@ -508,31 +353,6 @@
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/session/systematic-debugging/SKILL.md"
     },
     {
-      "slug": "tooling/artifact-classifier",
-      "name": "artifact-classifier",
-      "category": "tooling",
-      "description": "Classify files and generated outputs before cleanup, staging, refactoring, or deletion: project-owned artifact, generated disposable artifact, external cache, log/signal file, or user-owned document. Use when there is risk of deleting or ignoring important artifacts. Do NOT use for ordinary file listings with no action planned.",
-      "tags": [
-        "artifacts",
-        "cleanup",
-        "safety",
-        "classification",
-        "project-state"
-      ],
-      "target_llms": [
-        "all"
-      ],
-      "source": "original",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [
-        "development/git-staging-guardian",
-        "session/living-doc-reconciler"
-      ],
-      "path": "tooling/artifact-classifier/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/artifact-classifier/SKILL.md"
-    },
-    {
       "slug": "tooling/edit-article",
       "name": "edit-article",
       "category": "tooling",
@@ -547,7 +367,7 @@
         "chatgpt",
         "claude-code"
       ],
-      "source": "unknown",
+      "source": "mattpocock/skills",
       "aliases": [],
       "upstream": null,
       "chains_to": [],
@@ -573,9 +393,7 @@
       "aliases": [],
       "upstream": null,
       "chains_to": [
-        "session/living-doc-reconciler",
-        "session/strategic-compact",
-        "persona/project-architect"
+        "session/strategic-compact"
       ],
       "path": "tooling/llm-wiki/SKILL.md",
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/llm-wiki/SKILL.md"
@@ -648,8 +466,7 @@
       "aliases": [],
       "upstream": null,
       "chains_to": [
-        "tooling/write-a-skill",
-        "architecture/request-refactor-plan"
+        "tooling/write-a-skill"
       ],
       "path": "tooling/skill-audit/SKILL.md",
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/skill-audit/SKILL.md"
