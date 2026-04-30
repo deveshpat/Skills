@@ -21,27 +21,11 @@ const routerOutPath = outFlagIdx !== -1
   ? path.resolve(root, argList[outFlagIdx + 1])
   : path.join(root, "router.json");
 
-const categories = new Set(["planning", "architecture", "development", "tooling", "session", "persona"]);
+const categories = new Set(["planning", "architecture", "development", "tooling", "session"]);
 const required = ["name", "description", "category", "tags", "target_llms"];
 const skipDirs = new Set([".git", "node_modules", "dist", ".claude"]);
 
 const BASE_URL = "https://raw.githubusercontent.com/deveshpat/skills/main";
-
-// Entry table: maps situations to skill slugs — kept here as the source of truth
-const ENTRY_TABLE = [
-  { situation: "Vague idea, not yet thought through", skills: ["planning/grill-me", "planning/write-a-prd"] },
-  { situation: "Clear idea, no requirements doc", skills: ["planning/write-a-prd"] },
-  { situation: "PRD exists, need implementation plan", skills: ["planning/prd-to-plan"] },
-  { situation: "Plan exists, need GitHub tickets", skills: ["planning/prd-to-issues"] },
-  { situation: "Bug, root cause unknown", skills: ["session/systematic-debugging", "development/triage-issue"] },
-  { situation: "Bug, root cause known", skills: ["development/triage-issue", "development/tdd"] },
-  { situation: "Feature or fix to implement", skills: ["development/tdd"] },
-  { situation: "Architecture friction / duplication / file too long", skills: ["architecture/improve-codebase-architecture"] },
-  { situation: "Architecture direction agreed, need coding-agent prompt", skills: ["architecture/request-refactor-plan"] },
-  { situation: "Context window >= 80% or 'compact'", skills: ["session/strategic-compact"] },
-  { situation: "Multi-session project with BLUEPRINT.md", skills: ["persona/project-architect"], note: "load as persona" },
-  { situation: "ML training / GPU workflows / experiment tracking", skills: ["persona/ml-engineer"], note: "load as persona" },
-];
 
 // ---------------------------------------------------------------------------
 // Filesystem helpers
@@ -225,7 +209,6 @@ if (args.has("--write-router")) {
     ...manual,                              // announcements, and anything else you add manually
     generated_from: "SKILL.md frontmatter",
     base_url: BASE_URL,
-    entry_table: ENTRY_TABLE,
     skills: registry,
   };
   fs.mkdirSync(path.dirname(routerOutPath), { recursive: true });
