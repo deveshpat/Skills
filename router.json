@@ -109,7 +109,10 @@
       "source": "mattpocock/skills",
       "aliases": [],
       "upstream": null,
-      "chains_to": [],
+      "chains_to": [
+        "development/tdd",
+        "development/triage-issue"
+      ],
       "path": "architecture/improve-codebase-architecture/SKILL.md",
       "url": "https://raw.githubusercontent.com/deveshpat/skills/main/architecture/improve-codebase-architecture/SKILL.md"
     },
