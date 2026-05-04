@@ -25,6 +25,8 @@ with verbatim output only. Refactor docs and code only when necessary, not autom
 Internalize [Skills Description](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at
 session start and do announcements accordingly. Load relevant skills only — avoid fetching skills preemptively to preserve context.
 
+`/<skill>` <--- Analyze the relevance and Invoke the specific skill mentioned.
+
 # Context
 Current Working Repo → <GitHub_Repo> @ <url>
 ```
