@@ -7,9 +7,7 @@ tags:
   - editing
   - article
   - prose
-target_llms:
-  - chatgpt
-  - claude-code
+target_llms: [all]
 composable_with: []
 ---
 

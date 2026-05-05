@@ -7,7 +7,7 @@ tags: [skills, meta, authoring, bootstrap]
 target_llms: [all]
 source: mattpocock/skills
 composable_with:
-  - tooling/ubiquitous-language
+  - tooling/skill-audit
 ---
 
 # Writing Skills

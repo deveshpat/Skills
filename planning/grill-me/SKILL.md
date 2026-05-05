@@ -7,11 +7,9 @@ tags:
   - planning
   - risk
   - review
-target_llms:
-  - chatgpt
-  - claude-code
+target_llms: [all]
 composable_with:
-  - planning/write-a-prd
+  - planning/to-prd
   - planning/prd-to-plan
   - tooling/write-a-skill
 ---

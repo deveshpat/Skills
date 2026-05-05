@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * validate-skills — validate SKILL.md files and optionally write router.json
+ * validate-skills — validate canonical SKILL.md files and optionally write router.json.
  *
  * Usage:
  *   node scripts/validate-skills.js
@@ -10,26 +10,79 @@
 
 import fs from "fs";
 import path from "path";
+import { parseSkillFile, toArray } from "./lib/frontmatter.js";
+import { findBrokenMarkdownLinks, findStaleReferences, markdownLinkTargets } from "./lib/doc-lint.js";
+import { BASE_URL } from "./lib/project-config.js";
 
 const root = process.cwd();
 const args = new Set(process.argv.slice(2));
 const argList = process.argv.slice(2);
 
-// --out <path> support
 const outFlagIdx = argList.indexOf("--out");
 const routerOutPath = outFlagIdx !== -1
   ? path.resolve(root, argList[outFlagIdx + 1])
   : path.join(root, "router.json");
 
-const categories = new Set(["planning", "architecture", "development", "tooling", "session"]);
+const categories = new Set(["planning", "architecture", "development", "productivity", "tooling", "session"]);
 const required = ["name", "description", "category", "tags", "target_llms"];
-const skipDirs = new Set([".git", "node_modules", "dist", ".claude"]);
-
-const BASE_URL = "https://raw.githubusercontent.com/deveshpat/skills/main";
-
-// ---------------------------------------------------------------------------
-// Filesystem helpers
-// ---------------------------------------------------------------------------
+const skipDirs = new Set([".git", "node_modules", "dist", ".claude", "coverage"]);
+const DEFAULT_ROUTER_META = {
+  announcements: [
+    { "Session init": "Internalised Skill-Binder router." },
+    { "Loading Skill": "<skill-name> initialised." },
+  ],
+  entry_table: [
+    {
+      situation: "Architecture/codebase health should be reviewed before planning",
+      skills: ["architecture/improve-codebase-architecture"],
+      note: "Optional architecture preflight; do not auto-run.",
+    },
+    {
+      situation: "Vague idea, not yet thought through",
+      skills: ["planning/grill-me", "planning/to-prd"],
+    },
+    {
+      situation: "Vague idea requiring codebase/domain-doc grounding",
+      skills: ["planning/grill-with-docs", "planning/to-prd"],
+    },
+    {
+      situation: "Clear idea, no requirements doc",
+      skills: ["planning/to-prd"],
+    },
+    {
+      situation: "PRD exists, need implementation plan",
+      skills: ["planning/prd-to-plan"],
+    },
+    {
+      situation: "Plan exists, need tickets",
+      skills: ["planning/to-issues"],
+    },
+    {
+      situation: "Bug, root cause unknown",
+      skills: ["development/diagnose", "development/triage"],
+    },
+    {
+      situation: "Bug, root cause known",
+      skills: ["development/triage", "development/tdd"],
+    },
+    {
+      situation: "Feature or fix ready to implement",
+      skills: ["development/tdd"],
+    },
+    {
+      situation: "Need broader codebase context",
+      skills: ["architecture/zoom-out"],
+    },
+    {
+      situation: "User wants ultra-terse responses",
+      skills: ["productivity/caveman"],
+    },
+    {
+      situation: "Context window >= 80% or 'compact'",
+      skills: ["session/strategic-compact"],
+    },
+  ],
+};
 
 function walk(dir, out = []) {
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -45,56 +98,6 @@ function rel(file) { return path.relative(root, file).replaceAll(path.sep, "/");
 function skillSlug(file) { return rel(path.dirname(file)); }
 function dirSlug(file) { return path.basename(path.dirname(file)); }
 
-// ---------------------------------------------------------------------------
-// Frontmatter parser
-// ---------------------------------------------------------------------------
-
-function parseFrontmatter(file) {
-  const content = fs.readFileSync(file, "utf8");
-  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) return { meta: null, body: content, error: "Malformed frontmatter: expected standalone opening and closing --- delimiters" };
-
-  const meta = {};
-  const lines = match[1].split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (!line.trim() || line.trim().startsWith("#")) continue;
-    const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$/);
-    if (!m) continue;
-    const [, key, raw] = m;
-    if (raw === ">") {
-      const block = [];
-      while (i + 1 < lines.length && /^\s+/.test(lines[i + 1])) block.push(lines[++i].trim());
-      meta[key] = block.join(" ").trim();
-    } else if (raw.startsWith("[")) {
-      meta[key] = raw.replace(/^\[/, "").replace(/\]$/, "").split(",").map(s => s.trim()).filter(Boolean);
-    } else if (raw === "") {
-      const arr = [];
-      while (i + 1 < lines.length && /^\s*-\s+/.test(lines[i + 1])) arr.push(lines[++i].replace(/^\s*-\s+/, "").trim());
-      meta[key] = arr.length ? arr : "";
-    } else {
-      meta[key] = raw.trim();
-    }
-  }
-  return { meta, body: match[2] };
-}
-
-// ---------------------------------------------------------------------------
-// Local link extractor
-// ---------------------------------------------------------------------------
-
-function linkTargets(markdown) {
-  const withoutFences = markdown.replace(/```[\s\S]*?```/g, "");
-  const links = [];
-  const re = /\[[^\]]+\]\((?!https?:|mailto:|#)([^)]+)\)/g;
-  let m;
-  while ((m = re.exec(withoutFences))) links.push(m[1].split("#")[0]);
-  return links.filter(Boolean);
-}
-
-// ---------------------------------------------------------------------------
-// Read router.json to verify listed skills exist (replaces old ROUTER.md regex)
-// ---------------------------------------------------------------------------
 
 function parseRouterSkills() {
   if (!fs.existsSync(routerOutPath)) return [];
@@ -105,10 +108,6 @@ function parseRouterSkills() {
     return [];
   }
 }
-
-// ---------------------------------------------------------------------------
-// Validation
-// ---------------------------------------------------------------------------
 
 const files = walk(root);
 const errors = [];
@@ -121,37 +120,46 @@ for (const file of files) bySlug.set(skillSlug(file), file);
 for (const file of files) {
   const slug = skillSlug(file);
   const folder = dirSlug(file);
-  const { meta, body, error } = parseFrontmatter(file);
+  const { meta, body, error } = parseSkillFile(file);
   if (error) { errors.push(`${slug}: ${error}`); continue; }
 
   for (const key of required) {
-    if (!meta[key] || (Array.isArray(meta[key]) && meta[key].length === 0))
+    if (!meta[key] || (Array.isArray(meta[key]) && meta[key].length === 0)) {
       errors.push(`${slug}: missing required frontmatter field '${key}'`);
+    }
   }
-  if (meta.category && !categories.has(meta.category))
+
+  if (meta.category && !categories.has(meta.category)) {
     errors.push(`${slug}: invalid category '${meta.category}'`);
+  }
+
   if (meta.name && meta.name !== folder) {
-    const aliases = Array.isArray(meta.aliases) ? meta.aliases : [];
-    if (!aliases.includes(folder))
+    const aliases = toArray(meta.aliases);
+    if (!aliases.includes(folder)) {
       errors.push(`${slug}: frontmatter name '${meta.name}' does not match directory slug '${folder}' and aliases does not include '${folder}'`);
+    }
   }
-  if (meta.description && String(meta.description).length < 50)
+
+  if (meta.description && String(meta.description).length < 50) {
     warnings.push(`${slug}: description is short (${String(meta.description).length} chars)`);
-  if (meta.category !== "persona" && !/##\s+(When to Use|Process|Workflow|Steps|How to Use)/i.test(body))
-    warnings.push(`${slug}: body may be too thin; no obvious workflow heading found`);
-  if (/Replace this file|TODO:|TBD|placeholder content|Install full content/i.test(body))
-    errors.push(`${slug}: placeholder/TODO content remains in SKILL.md`);
-
-  for (const target of linkTargets(body)) {
-    const resolved = path.resolve(path.dirname(file), target);
-    if (!fs.existsSync(resolved))
-      errors.push(`${slug}: broken local link '${target}'`);
   }
 
-  const composable = Array.isArray(meta.composable_with) ? meta.composable_with : [];
+  if (!/##\s+(When to Use|Process|Workflow|Steps|How to Use|Philosophy)/i.test(body)) {
+    warnings.push(`${slug}: body may be too thin; no obvious workflow heading found`);
+  }
+
+  if (/Replace this file|TODO:|TBD|placeholder content|Install full content/i.test(body)) {
+    errors.push(`${slug}: placeholder/TODO content remains in SKILL.md`);
+  }
+
+  for (const target of markdownLinkTargets(body)) {
+    const resolved = path.resolve(path.dirname(file), target);
+    if (!fs.existsSync(resolved)) errors.push(`${slug}: broken local link '${target}'`);
+  }
+
+  const composable = toArray(meta.composable_with);
   for (const target of composable) {
-    if (!bySlug.has(target))
-      errors.push(`${slug}: composable_with target '${target}' does not exist`);
+    if (!bySlug.has(target)) errors.push(`${slug}: composable_with target '${target}' does not exist`);
   }
 
   registry.push({
@@ -159,47 +167,43 @@ for (const file of files) {
     name: meta.name,
     category: meta.category,
     description: meta.description,
-    tags: Array.isArray(meta.tags) ? meta.tags : [],
-    target_llms: Array.isArray(meta.target_llms) ? meta.target_llms : [meta.target_llms].filter(Boolean),
+    tags: toArray(meta.tags),
+    target_llms: toArray(meta.target_llms),
     source: meta.source || "unknown",
-    aliases: Array.isArray(meta.aliases) ? meta.aliases : [],
-    upstream: meta.upstream || null,
+    aliases: toArray(meta.aliases),
+    upstream: meta.upstream || meta.upstream_url || null,
     chains_to: composable,
     path: rel(file),
     url: `${BASE_URL}/${rel(file)}`,
   });
 }
 
-// Verify skills listed in existing router.json point to real files
 for (const item of parseRouterSkills()) {
-  if (!fs.existsSync(path.join(root, item.path)))
+  if (!fs.existsSync(path.join(root, item.path))) {
     errors.push(`router.json: listed skill '${item.name}' points to missing '${item.path}'`);
+  }
 }
 
-// Verify README links
-if (fs.existsSync(path.join(root, "README.md"))) {
-  const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
-  for (const target of linkTargets(readme)) {
-    if (target.startsWith("./")) {
-      const resolved = path.resolve(root, target);
-      if (!fs.existsSync(resolved))
-        errors.push(`README.md: broken local link '${target}'`);
-    }
-  }
+for (const stale of findStaleReferences(root, {
+  exclude: (file) => file.startsWith("test/") || file === "scripts/validate-skills.js" || file === "scripts/lib/doc-lint.js",
+})) {
+  errors.push(stale);
+}
+
+for (const broken of findBrokenMarkdownLinks(root, {
+  exclude: (file) => file.startsWith("dist/"),
+})) {
+  errors.push(broken);
 }
 
 registry.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
 
-// ---------------------------------------------------------------------------
-// Write router.json (unified — replaces both --write-registry and --write-router)
-// ---------------------------------------------------------------------------
-
 if (args.has("--write-router")) {
-  // Preserve manually-managed fields from existing router.json
   let existing = {};
   if (fs.existsSync(routerOutPath)) {
     try { existing = JSON.parse(fs.readFileSync(routerOutPath, "utf8")); } catch {}
   }
+
   const GENERATED_KEYS = new Set(["generated_from", "base_url", "skills"]);
   const manual = Object.fromEntries(
     Object.entries(existing).filter(([k]) => !GENERATED_KEYS.has(k))
@@ -208,17 +212,15 @@ if (args.has("--write-router")) {
   const router = {
     generated_from: "SKILL.md frontmatter",
     base_url: BASE_URL,
+    ...DEFAULT_ROUTER_META,
     ...manual,
     skills: registry,
   };
+
   fs.mkdirSync(path.dirname(routerOutPath), { recursive: true });
   fs.writeFileSync(routerOutPath, JSON.stringify(router, null, 2) + "\n");
   console.log(`[wrote] ${path.relative(root, routerOutPath)}`);
 }
-
-// ---------------------------------------------------------------------------
-// Report
-// ---------------------------------------------------------------------------
 
 for (const w of warnings) console.warn(`[WARN] ${w}`);
 if (errors.length) {

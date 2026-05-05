@@ -42,4 +42,4 @@ Many TDD cycles end at GREEN with no refactor needed.
 
 Triggering `tdd` for architecture-only or planning-only requests. The description says
 "Do NOT trigger for planning-only or architecture-only requests." If the user hasn't decided
-what to build yet, route to `grill-me` or `write-a-prd` first.
+what to build yet, route to `grill-me` or `to-prd` first.

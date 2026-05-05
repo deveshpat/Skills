@@ -11,7 +11,7 @@ target_llms: [all]
 source: mattpocock/skills
 upstream: https://github.com/mattpocock/skills/tree/main/prd-to-plan
 composable_with:
-  - planning/prd-to-issues
+  - planning/to-issues
 ---
 
 # PRD to Plan

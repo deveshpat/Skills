@@ -6,8 +6,7 @@ category: tooling
 tags: [obsidian, notes, knowledge-management, wikilinks, vault]
 target_llms: [all]
 source: mattpocock/skills
-composable_with:
-  - tooling/ubiquitous-language
+composable_with: []
 ---
 
 # Obsidian Vault

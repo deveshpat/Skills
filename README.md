@@ -1,317 +1,165 @@
-# deveshpat/skills
+# Skill-Binder
 
-A portable, LLM-agnostic process library. Not prompts — repeatable workflows that force structured thinking before execution.
+It is a portable Markdown library: one `SKILL.md` per workflow, plus `router.json` as the phonebook. Any LLM that can read Markdown can use it.
 
-Each skill defines *how* to do something, not just *what* to say. Drop it into any capable LLM and get consistent, structured output every time.
-
-**Works on:** Claude Code · claude.ai · ChatGPT · Gemini · any API integration
+**Works with:** ChatGPT · Claude · Gemini · local models · coding agents · anything that can fetch or paste Markdown.
 
 ---
 
-## Quick Setup
+## Quick start
 
-Paste this as your system prompt or Custom Instructions, replacing the placeholders:
+Paste this into your system prompt or Custom Instructions:
 
 ```markdown
-# Persona
-You are the Lead Implementation Engineer. Validate every approach before writing code — do not begin
-until you are 95% certain the required approach is viable, mathematically sound, and technically
-functional. Write well-structured Python files that follow industry best practices and leverage
-established libraries. Do not reinvent core components from scratch. Prune redundant code and
-enforce clean naming conventions, but only when necessary — not automatically on every prompt.
+# Context & Capabilities
 
-# Skills
-Internalize [Skills Description](https://raw.githubusercontent.com/deveshpat/skills/main/router.json) at
-session start and do announcements accordingly. Load relevant skills only — avoid fetching skills preemptively to preserve context.
+Workspace -> <Project_Name> @ <url_or_path>.
+All work -> grounded in current workspace.
 
-`/<skill>` <--- Analyze the relevance and Invoke the specific skill mentioned.
+Before acting:
+- inspect relevant context
+- load relevant docs/files
+- avoid assumptions when sources exist
+- surface conflicts/gaps in evidence
 
-# Context
-Current Working Repo → <GitHub_Repo> @ <url>
+Skill-Binder:
+- session start -> internalize capabilities from router.json
+- router -> https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/router.json
+- announce -> briefly state available/loaded skills
+- task matches skill -> fetch only matching <category>/<skill>/SKILL.md
+- /<skill> -> assess relevance -> invoke directly
+- follow SKILL.md exactly
+- chains_to/composable_with -> continue if useful
+- avoid loading whole repo
+
+Execution style:
+- scrutinize everything
+- 95% confident -> approach works
+- evidence-based
+- workflow-driven
+- minimal context usage
+- no unnecessary rewrites/work
+- established libraries -> no reinventing core pieces
+- industry best practices
+- implementation -> small validated slices; use TDD skill when behavior changes
+- after changes -> report validation run + result
+- docs current -> avoid future confusion
+- rename/refactor only when task benefits
 ```
 
-**`# Persona`** — Optional. The block above is the ML engeneer. For Project Architect/ Planning sessions, replace it with the persona below. Omit entirely for one-off tasks.
-
-<details>
-<summary>Project Architect persona</summary>
-
-```markdown
-# Persona
-You are the Project Architect. Before any implementation, interrogate proposals with probing questions
-and stress-test them — do not proceed until you are 95% certain the approach is viable and will work
-in practice. Generate coding-agent prompts as self-contained `.md` files structured as:
-Context → Root Cause → Fix → Acceptance Criteria. Maintain `BLUEPRINT.md` as the single source of
-truth: check off implemented items, document resolved decisions, and keep `terminal_log.md` updated
-with verbatim output only. Refactor docs and code only when necessary, not automatically.
-```
-
-</details>
-
-**`# Skills`** — Points the LLM to the router. It fetches router.json at session start and from there fetches individual skill URLs only when a trigger matches.
-
-**`# Context`** — Ground the LLM in your repo. Replace with your actual repo name and URL.
+Persona optional. Use it for implementation-heavy sessions. Omit it for one-off writing, planning, or debugging.
 
 ---
 
-## Two Ways to Load Skills
+## How to use
 
-### 1. AGENT.md — five skills, zero fetches
+| Need | Use |
+|---|---|
+| Discover skills on demand | [router.json](./router.json) |
+| Paste compact always-on prompt | [AGENT.md](./AGENT.md) |
+| Browse human index | [dist/skills-index.md](./dist/skills-index.md) |
+| Maintain repo | [CONTRIBUTING.md](./CONTRIBUTING.md) |
 
-[AGENT.md](./AGENT.md) embeds the five most-used skills inline. Paste it (or instruct the LLM to fetch it) when you want `grill-me`, `tdd`, `systematic-debugging`, `prd-to-plan`, and `strategic-compact` immediately available at a fixed, predictable context cost.
-
-```
-Fetch https://raw.githubusercontent.com/deveshpat/skills/main/AGENT.md
-and keep its workflows active for this session.
-```
-
-### 2. ROUTER — on-demand registry
-
-[router.json](./router.json) is a concise skill registry: entry table, one-line trigger/not-trigger per skill, fetch URL, and chaining info. The LLM fetches it when it needs to look up a skill it does not already have.
-
-### Claude Code
-
-Skills are auto-discovered from their `description` fields — no system prompt needed.
-
-```bash
-git clone https://github.com/deveshpat/skills ~/.claude/skills/deveshpat
-```
+`router.json` is source for discovery: skill names, trigger contracts, paths, URLs, aliases, and `chains_to` handoffs.
 
 ---
 
-## Entry Point — Start Here
+## Start here
 
-Before anything else, use this table. It is a lookup, not a judgment call.
+| Situation | Start |
+|---|---|
+| Architecture/codebase health review first | `improve-codebase-architecture` *(optional preflight)* |
+| Vague idea | `grill-me` |
+| Vague idea + docs/code matter | `grill-with-docs` |
+| Clear idea -> requirements | `to-prd` |
+| PRD -> phases | `prd-to-plan` |
+| Plan/spec -> tickets | `to-issues` |
+| Unknown bug cause | `diagnose` |
+| Known bug/feature ready | `tdd` |
+| Issue workflow | `triage` |
+| Need bigger code map | `zoom-out` |
+| Reply terse | `caveman` |
+| Session handoff | `strategic-compact` |
 
-```
-Where are you?                          Start here
-──────────────────────────────────────────────────
-Vague idea, not yet thought through  →  grill-me
-Clear idea, no spec yet              →  write-a-prd
-Spec exists, need a phased plan      →  prd-to-plan
-Plan exists, need GitHub tickets     →  prd-to-issues
-Bug, root cause unknown              →  systematic-debugging
-Bug, root cause known                →  triage-issue
-Implementing a feature or fix        →  tdd
-Architecture is the problem          →  improve-codebase-architecture
-Context window filling up            →  strategic-compact
-```
-
----
-
-## Cookbook
-
-Each recipe is a realistic session — what you type, what the LLM does, what comes out. Enter mid-chain at the step that matches where you actually are.
+`improve-codebase-architecture` is an optional architecture preflight, not default start. Use it before planning only when user explicitly wants architecture health, duplication, module depth, or refactor risk reviewed first.
 
 ---
 
-### Recipe 1 — From fuzzy idea to a queue of tickets
+## Cookbooks
 
-**When to use:** You have a rough concept but have not thought through edge cases, constraints, or sequencing.
+### Fuzzy idea -> implementation
 
-```
-You:   "I want to add real-time notifications to the app. Grill me."
-
-LLM:   [grill-me]
-       Identifies the strongest assumptions:
-       - Who receives notifications?
-       - What triggers one?
-       - Fire-and-forget or persistent unread state?
-       - Delivery targets: in-app, email, push, or all three?
-       - Retry behavior on delivery failure?
-
-       Attacks from multiple angles, separates fatal flaws from
-       fixable weaknesses, ends with a go/no-go recommendation.
-
-You:   "Good points. Here are my answers: [answers]. Write a PRD."
-
-LLM:   [write-a-prd]
-       Problem Statement / Solution / User Stories /
-       Implementation Decisions / Testing Decisions / Out of Scope
-
-You:   "Turn it into an implementation plan."
-
-LLM:   [prd-to-plan]
-       Phase 1 — Tracer bullet: DB schema + in-app banner, end-to-end
-       Phase 2 — Reliability: retry queue, delivery receipts
-       Phase 3 — Channels: email, push, preference management
-
-You:   "Slice into GitHub tickets."
-
-LLM:   [prd-to-issues]
-       11 issues in dependency order, HITL/AFK annotated.
+```text
+grill-me or grill-with-docs -> to-prd -> prd-to-plan -> to-issues -> tdd
 ```
 
-**Chain:** `grill-me` → `write-a-prd` → `prd-to-plan` → `prd-to-issues` → `tdd`
+Use `grill-with-docs` when project docs/code can answer some questions. Use `grill-me` when the plan is mostly conceptual.
+
+### Architecture preflight -> PRD
+
+```text
+improve-codebase-architecture -> grill-with-docs -> to-prd -> prd-to-plan -> to-issues -> tdd
+```
+
+Only when architecture health is part of the ask. Not mandatory.
+
+### Bug -> tested fix
+
+```text
+diagnose -> triage -> tdd
+```
+
+`diagnose` builds a fast repro loop before guessing. `tdd` locks the fix through public behavior.
+
+### Long session -> next session
+
+```text
+strategic-compact
+```
+
+Keeps decisions, current state, compressed context, and one executable next step.
 
 ---
 
-### Recipe 2 — You have a PRD, need a plan
+## Skill families
 
+Canonical list lives in [router.json](./router.json). Generated index lives in [dist/skills-index.md](./dist/skills-index.md).
+
+Old command names remain aliases where useful:
+
+```text
+write-a-prd -> to-prd
+prd-to-issues -> to-issues
+systematic-debugging -> diagnose
+triage-issue -> triage
+git-guardrails-claude-code -> git-guardrails
 ```
-You:   "Here's the PRD [paste]. Break it into tracer-bullet phases."
 
-LLM:   [prd-to-plan]
-       Identifies durable decisions (routes, schema, key models) first.
-       Proposes phases as a numbered list.
+| Family | Skills |
+|---|---|
+| Planning | `grill-me`, `grill-with-docs`, `to-prd`, `prd-to-plan`, `to-issues` |
+| Architecture | `improve-codebase-architecture`, `zoom-out` |
+| Development | `diagnose`, `triage`, `tdd`, `git-staging-guardian`, `git-guardrails` |
+| Tooling | `write-a-skill`, `skill-audit`, `llm-wiki`, `setup-pre-commit`, `edit-article`, `obsidian-vault` |
+| Productivity | `caveman` |
+| Session | `strategic-compact` |
 
-You:   "Split Phase 2 into two."
-
-LLM:   Revises, confirms, writes ./plans/notifications.md
-```
+Deprecated upstream skills are not canonical here. If a workflow disappears upstream, keep it out of `router.json` unless Skill-Binder intentionally owns a fork.
 
 ---
 
-### Recipe 3 — Bug with no error message
+## For maintainers
 
-```
-You:   "Payments are silently failing for ~3% of mobile transactions."
-
-LLM:   [systematic-debugging]
-       Refuses to hypothesize until four questions are answered verbatim.
-       Isolates environment. Finds SDK version delta matches symptom onset.
-       Forms one hypothesis. Designs one falsifying test.
-
-You:   "Confirmed. File the issue."
-
-LLM:   [triage-issue]
-       GitHub issue: root cause, reproduction, TDD fix plan.
-```
-
-**Chain:** `systematic-debugging` → `triage-issue` → `tdd`
-
----
-
-### Recipe 4 — Architecture that has grown too wide
-
-```
-You:   "auth.py is 900 lines. Fix the architecture."
-
-LLM:   [improve-codebase-architecture]
-       Explores codebase. Maps responsibilities. Surfaces deepening candidates.
-       Walks through the design with you. Crystallises decisions into CONTEXT.md.
-
-You:   "Agreed on that direction. Write the coding-agent prompt."
-
-LLM:   Produces a self-contained .md: Context → Root Cause → Fix → Acceptance Criteria.
-       Paste directly into Claude Code or any coding agent.
-```
-
-**Chain:** `improve-codebase-architecture` → `tdd`
-
----
-
-### Recipe 5 — Context window running low
-
-```
-You:   "Compact."
-
-LLM:   [strategic-compact]
-       Audits conversation. Preserves decisions verbatim. Drops noise.
-       Produces a ≤600-word compact. Ends with handoff instruction.
-```
-
----
-
-## Skill Index
-
-### Planning
-
-| Skill | Triggers | Output |
-|---|---|---|
-| [grill-me](./planning/grill-me/SKILL.md) | "grill me", "stress-test this", "what am I missing" | Go/no-go with risks and fixes |
-| [write-a-prd](./planning/write-a-prd/SKILL.md) | "write a PRD", "spec this out" | Structured PRD |
-| [prd-to-plan](./planning/prd-to-plan/SKILL.md) | "turn this into a plan", "tracer bullets" | Phased implementation plan |
-| [prd-to-issues](./planning/prd-to-issues/SKILL.md) | "slice into tickets", "create GitHub issues" | GitHub issues with HITL/AFK tags |
-
-### Architecture
-
-| Skill | Triggers | Output |
-|---|---|---|
-| [improve-codebase-architecture](./architecture/improve-codebase-architecture/SKILL.md) | "architecture review", "too long", "too much duplication" | Deep-module candidates + design grilling |
-| [design-an-interface](./architecture/design-an-interface/SKILL.md) | "design an interface", "give me API options" | ≥2 radically different designs |
-
-### Development
-
-| Skill | Triggers | Output |
-|---|---|---|
-| [tdd](./development/tdd/SKILL.md) | "implement X", "build this feature", "fix this bug" | Working code via red→green→refactor |
-| [triage-issue](./development/triage-issue/SKILL.md) | "find the root cause", "investigate this bug" | GitHub issue with TDD fix plan |
-| [git-guardrails](./development/git-guardrails/SKILL.md) | "protect my git", "prevent accidental push" | Claude Code hooks |
-| [git-staging-guardian](./development/git-staging-guardian/SKILL.md) | "commit", "stage these changes" | Path-verified staging |
-
-### Session
-
-| Skill | Triggers | Output |
-|---|---|---|
-| [systematic-debugging](./session/systematic-debugging/SKILL.md) | "failing silently", "can't reproduce", "it worked before" | Single testable root-cause hypothesis |
-| [strategic-compact](./session/strategic-compact/SKILL.md) | "compact", context ≥ 80% | ≤600-word handoff compact |
-
-### Tooling
-
-| Skill | Triggers | Output |
-|---|---|---|
-| [write-a-skill](./tooling/write-a-skill/SKILL.md) | "create a skill for X" | New SKILL.md with correct structure |
-| [skill-audit](./tooling/skill-audit/SKILL.md) | "audit this skills repo" | Defects + patch order |
-| [setup-pre-commit](./tooling/setup-pre-commit/SKILL.md) | "add Husky", "format on commit" | Configured Husky + lint-staged |
-| [ubiquitous-language](./tooling/ubiquitous-language/SKILL.md) | "build a glossary", "extract domain language" | DDD-style glossary |
-| [edit-article](./tooling/edit-article/SKILL.md) | "edit this article", "tighten this prose" | Restructured, tightened writing |
-| [obsidian-vault](./tooling/obsidian-vault/SKILL.md) | "search my notes", "create a note in Obsidian" | Note operations with wikilinks |
-| [llm-wiki](./tooling/llm-wiki/SKILL.md) | "set up a wiki", "distill this session", "what do we know about X" | Persistent synthesized knowledge base |
-
----
-
-## Pipeline
-
-```
-vague idea
-    │
-    ▼
-grill-me ──────────────────────────────────── (skip if idea is clear)
-    │
-    ▼
-write-a-prd ───────────────────────────────── (skip if PRD exists)
-    │
-    ▼
-prd-to-plan ───────────────────────────────── (skip if plan exists)
-    │
-    ▼
-prd-to-issues
-    │
-    ▼
-tdd ◄──── triage-issue ◄──── systematic-debugging
-
-
-improve-codebase-architecture ──► tdd
-```
-
----
-
-## Writing Your Own Skills
-
-Skills follow [SKILL_TEMPLATE.md](./SKILL_TEMPLATE.md). Use `write-a-skill` to bootstrap.
-
-The `description` frontmatter field is the trigger contract — it is what Claude Code auto-discovery and router.json use to match skills. Write it precisely: what the skill solves, exact trigger phrases, and exact counter-cases.
-
-Validate and regenerate the registry:
-
-```bash
-node scripts/validate-skills.js --write-router
-```
+Contributor-facing details live in [CONTRIBUTING.md](./CONTRIBUTING.md): authoring rules, validation, router generation, exports, and doc-drift checks.
 
 ---
 
 ## Credits
 
-**[Matt Pocock](https://github.com/mattpocock/skills)** — the skills-as-workflows methodology, description-driven auto-select trigger contract, and upstream source for `grill-me`, `write-a-prd`, `prd-to-plan`, `prd-to-issues`, `tdd`, `triage-issue`, `git-guardrails`, `write-a-skill`, `setup-pre-commit`, `ubiquitous-language`, `edit-article`, `obsidian-vault`
+**[Matt Pocock](https://github.com/mattpocock/skills)** — skills-as-workflows methodology and upstream source for several core skills.
 
-**[Affaan M](https://github.com/affaan-m/everything-claude-code)** — `strategic-compact`
+**[Affaan M](https://github.com/affaan-m/everything-claude-code)** — `strategic-compact`.
 
-**[Jesse Vincent / obra](https://github.com/obra/superpowers)** — `systematic-debugging` base methodology
+**[Jesse Vincent / obra](https://github.com/obra/superpowers)** — `diagnose` base methodology.
 
-**[John Ousterhout](https://web.stanford.edu/~ouster/cgi-bin/aposd.php)** — Deep Modules and Design-It-Twice from *A Philosophy of Software Design*
-
-**[Dave Thomas & Andy Hunt](https://pragprog.com/titles/tppp/the-pragmatic-programmer/)** — Tracer Bullet development from *The Pragmatic Programmer*
-
-**[Kent Beck](https://www.kentbeck.com/)** — Red → Green → Refactor from *Test-Driven Development by Example*
-
-**[Eric Evans](https://www.domainlanguage.com/)** — Ubiquitous Language and bounded contexts from *Domain-Driven Design*
+**John Ousterhout, Dave Thomas, Andy Hunt, Kent Beck, Eric Evans** — architecture, tracer-bullet, TDD, and domain-language foundations behind several workflows.

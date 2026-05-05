@@ -3,11 +3,11 @@ name: skill-name
 description: >
   Specific trigger contract. State what problem this solves, exact phrases that
   trigger it, and exact situations that do NOT trigger it. Minimum 50 chars.
-  This IS the Claude Code auto-select trigger and the router match string.
-category: planning | architecture | development | tooling | session | persona
+  This is the router match string and may also be used by tools that auto-discover skills.
+category: planning | architecture | development | tooling | session
 tags: [tag1, tag2]
 target_llms: [all]
-source: original | mattpocock/skills | community/
+source: original | mattpocock/skills | community/<source>
 inputs:
   - name: input-name
     description: What you need before starting
@@ -21,8 +21,6 @@ composable_with:
 ---
 
 # Skill Title
-
-> **Persona skills only:** Load into system prompt, not per-task. Remove for workflow skills.
 
 One sentence: what this skill does and why it exists.
 
@@ -68,6 +66,7 @@ Describe output format precisely. State which skill it feeds into.
 - [ ] Output format is explicit.
 - [ ] Local links and bundled resources exist.
 - [ ] Description is narrow enough for routing.
+- [ ] `composable_with` paths point to existing skills.
 
 ## Constraints
 

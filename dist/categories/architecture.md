@@ -1,14 +1,19 @@
----
-name: improve-codebase-architecture
-description: >
-  Find deep-module opportunities in a codebase, surface architectural friction, generate an RFC. Triggers: 'architecture review', 'refactor', 'too much duplication', 'DRY', 'this file is too long'. Do NOT trigger for bug fixes or new features.
-category: architecture
-tags: [architecture, refactoring, deep-modules, dry, rfc]
-target_llms: [all]
-source: mattpocock/skills
-composable_with:
-  - development/tdd
-  - development/triage
+# Architecture skills
+
+Generated from canonical SKILL.md files.
+
+# improve-codebase-architecture
+
+- Category: architecture
+- Path: architecture/improve-codebase-architecture/SKILL.md
+- URL: https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/architecture/improve-codebase-architecture/SKILL.md
+- Tags: architecture, refactoring, deep-modules, dry, rfc
+- Chains to: `development/tdd`, `development/triage`
+
+## Trigger contract
+
+Find deep-module opportunities in a codebase, surface architectural friction, generate an RFC. Triggers: 'architecture review', 'refactor', 'too much duplication', 'DRY', 'this file is too long'. Do NOT trigger for bug fixes or new features.
+
 ---
 
 # Improve Codebase Architecture
@@ -82,3 +87,42 @@ Side effects happen inline as decisions crystallize:
 - **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
 - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing — skip ephemeral reasons ("not worth it right now") and self-evident ones. See [ADR-FORMAT.md](../domain-model/ADR-FORMAT.md).
 - **Want to explore alternative interfaces for the deepened module?** See [INTERFACE-DESIGN.md](INTERFACE-DESIGN.md).
+
+
+# zoom-out
+
+- Category: architecture
+- Path: architecture/zoom-out/SKILL.md
+- URL: https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/architecture/zoom-out/SKILL.md
+- Tags: architecture, codebase-map, context, module-relationships, onboarding
+- Chains to: `architecture/improve-codebase-architecture`, `development/diagnose`, `planning/to-prd`
+
+## Trigger contract
+
+Give broader context and a higher-level map for an unfamiliar section of code or system. Use when the user says 'zoom out', asks how code fits into the bigger picture, or needs module/caller context before planning, debugging, or refactoring.
+
+---
+
+# Zoom Out
+
+Use this skill when the user is too deep in one file, module, error, or implementation detail and needs the surrounding system map before deciding what to do.
+
+## Process
+
+1. Identify the local thing the user is focused on: file, module, API, bug, behavior, or concept.
+2. Walk one layer up: callers, callees, data flow, ownership boundaries, public interfaces, and related tests.
+3. Walk one layer sideways: adjacent modules, similar patterns, known alternatives, and repeated terminology.
+4. Use domain glossary terms and ADR decisions when they exist.
+5. Explain the map in terms of responsibilities and seams, not as a file-by-file tour.
+6. End with the safest next workflow: `to-prd`, `diagnose`, `tdd`, or `improve-codebase-architecture`.
+
+## Output Contract
+
+Return:
+
+- **Local focus** — what we zoomed out from.
+- **System map** — relevant modules/concepts and how they relate.
+- **Call/data flow** — the important path through the system.
+- **Key seams** — interfaces or boundaries that matter.
+- **Risks/unknowns** — what still needs evidence.
+- **Recommended next step** — one workflow or concrete action.

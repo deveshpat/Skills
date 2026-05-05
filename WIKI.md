@@ -2,7 +2,7 @@
 
 ## What this wiki is
 
-A synthesized understanding layer over deveshpat/skills. The project's own SKILL.md files
+A synthesized understanding layer over Skill-Binder. The project's own SKILL.md files
 are the source of truth — this wiki captures what they mean, not what they say.
 It accumulates patterns, trigger decisions, chaining logic, and known gotchas across sessions.
 

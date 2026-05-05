@@ -7,7 +7,7 @@ tags: [tdd, testing, red-green-refactor, vertical-slice, implementation]
 target_llms: [all]
 source: mattpocock/skills
 composable_with:
-  - development/triage-issue
+  - development/triage
 ---
 
 # Test-Driven Development

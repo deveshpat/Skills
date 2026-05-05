@@ -1,26 +1,40 @@
 {
   "generated_from": "SKILL.md frontmatter",
-  "base_url": "https://raw.githubusercontent.com/deveshpat/skills/main",
+  "base_url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main",
   "announcements": [
     {
-      "Session init": "Internalised all the skills."
+      "Session init": "Internalised Skill-Binder router."
     },
     {
-      "Loading Skill": "<Skill-name> Initialised!"
+      "Loading Skill": "<skill-name> initialised."
     }
   ],
   "entry_table": [
     {
+      "situation": "Architecture/codebase health should be reviewed before planning",
+      "skills": [
+        "architecture/improve-codebase-architecture"
+      ],
+      "note": "Optional architecture preflight; do not auto-run."
+    },
+    {
       "situation": "Vague idea, not yet thought through",
       "skills": [
         "planning/grill-me",
-        "planning/write-a-prd"
+        "planning/to-prd"
+      ]
+    },
+    {
+      "situation": "Vague idea requiring codebase/domain-doc grounding",
+      "skills": [
+        "planning/grill-with-docs",
+        "planning/to-prd"
       ]
     },
     {
       "situation": "Clear idea, no requirements doc",
       "skills": [
-        "planning/write-a-prd"
+        "planning/to-prd"
       ]
     },
     {
@@ -30,35 +44,41 @@
       ]
     },
     {
-      "situation": "Plan exists, need GitHub tickets",
+      "situation": "Plan exists, need tickets",
       "skills": [
-        "planning/prd-to-issues"
+        "planning/to-issues"
       ]
     },
     {
       "situation": "Bug, root cause unknown",
       "skills": [
-        "session/systematic-debugging",
-        "development/triage-issue"
+        "development/diagnose",
+        "development/triage"
       ]
     },
     {
       "situation": "Bug, root cause known",
       "skills": [
-        "development/triage-issue",
+        "development/triage",
         "development/tdd"
       ]
     },
     {
-      "situation": "Feature or fix to implement",
+      "situation": "Feature or fix ready to implement",
       "skills": [
         "development/tdd"
       ]
     },
     {
-      "situation": "Architecture friction / duplication / file too long",
+      "situation": "Need broader codebase context",
       "skills": [
-        "architecture/improve-codebase-architecture"
+        "architecture/zoom-out"
+      ]
+    },
+    {
+      "situation": "User wants ultra-terse responses",
+      "skills": [
+        "productivity/caveman"
       ]
     },
     {
@@ -69,28 +89,6 @@
     }
   ],
   "skills": [
-    {
-      "slug": "architecture/design-an-interface",
-      "name": "design-an-interface",
-      "category": "architecture",
-      "description": "Generate 2-3 radically different interface designs for a module using parallel sub-agents, each with trade-offs and a recommendation. Triggers: 'design an interface', 'give me interface options', 'how should I structure this API'. Do NOT trigger for implementation.",
-      "tags": [
-        "architecture",
-        "interface",
-        "design",
-        "parallel-agents",
-        "options"
-      ],
-      "target_llms": [
-        "all"
-      ],
-      "source": "mattpocock/skills",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [],
-      "path": "architecture/design-an-interface/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/architecture/design-an-interface/SKILL.md"
-    },
     {
       "slug": "architecture/improve-codebase-architecture",
       "name": "improve-codebase-architecture",
@@ -111,10 +109,65 @@
       "upstream": null,
       "chains_to": [
         "development/tdd",
-        "development/triage-issue"
+        "development/triage"
       ],
       "path": "architecture/improve-codebase-architecture/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/architecture/improve-codebase-architecture/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/architecture/improve-codebase-architecture/SKILL.md"
+    },
+    {
+      "slug": "architecture/zoom-out",
+      "name": "zoom-out",
+      "category": "architecture",
+      "description": "Give broader context and a higher-level map for an unfamiliar section of code or system. Use when the user says 'zoom out', asks how code fits into the bigger picture, or needs module/caller context before planning, debugging, or refactoring.",
+      "tags": [
+        "architecture",
+        "codebase-map",
+        "context",
+        "module-relationships",
+        "onboarding"
+      ],
+      "target_llms": [
+        "all"
+      ],
+      "source": "mattpocock/skills",
+      "aliases": [],
+      "upstream": "https://github.com/mattpocock/skills/tree/main/skills/engineering/zoom-out",
+      "chains_to": [
+        "architecture/improve-codebase-architecture",
+        "development/diagnose",
+        "planning/to-prd"
+      ],
+      "path": "architecture/zoom-out/SKILL.md",
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/architecture/zoom-out/SKILL.md"
+    },
+    {
+      "slug": "development/diagnose",
+      "name": "diagnose",
+      "category": "development",
+      "description": "Disciplined diagnosis loop for hard bugs, silent failures, flaky behavior, and performance regressions: build feedback loop, reproduce, hypothesize, instrument, fix, regression-test. Triggers: 'diagnose this', 'debug this', 'failing silently', 'can't reproduce', 'it worked before', performance regression, or /diagnose. Do NOT use when the root cause is already known.",
+      "tags": [
+        "debugging",
+        "diagnosis",
+        "reproduction",
+        "instrumentation",
+        "root-cause",
+        "regression-test"
+      ],
+      "target_llms": [
+        "all"
+      ],
+      "source": "mattpocock/skills + community/obra/superpowers",
+      "aliases": [
+        "systematic-debugging"
+      ],
+      "upstream": "https://github.com/mattpocock/skills/tree/main/skills/engineering/diagnose",
+      "chains_to": [
+        "development/triage",
+        "development/tdd",
+        "architecture/improve-codebase-architecture"
+      ],
+      "path": "development/diagnose/SKILL.md",
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/development/diagnose/SKILL.md"
     },
     {
       "slug": "development/git-guardrails",
@@ -140,7 +193,7 @@
         "tooling/setup-pre-commit"
       ],
       "path": "development/git-guardrails/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/development/git-guardrails/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/development/git-guardrails/SKILL.md"
     },
     {
       "slug": "development/git-staging-guardian",
@@ -164,7 +217,7 @@
         "development/git-guardrails"
       ],
       "path": "development/git-staging-guardian/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/development/git-staging-guardian/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/development/git-staging-guardian/SKILL.md"
     },
     {
       "slug": "development/tdd",
@@ -185,34 +238,39 @@
       "aliases": [],
       "upstream": null,
       "chains_to": [
-        "development/triage-issue"
+        "development/triage"
       ],
       "path": "development/tdd/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/development/tdd/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/development/tdd/SKILL.md"
     },
     {
-      "slug": "development/triage-issue",
-      "name": "triage-issue",
+      "slug": "development/triage",
+      "name": "triage",
       "category": "development",
-      "description": "Investigate a bug by exploring the codebase, identify the root cause, and file a GitHub issue with a TDD-based fix plan. Triggers: 'investigate this bug', 'find the root cause', 'why is this failing'. Do NOT trigger when root cause is already known.",
+      "description": "Triage issues through a lightweight state machine and prepare bugs or feature requests for humans or AFK agents. Triggers: 'triage this', 'review incoming issues', 'prepare this issue', 'investigate this bug', 'find the root cause', or /triage. Do NOT use when the user wants immediate implementation and the work is already specified.",
       "tags": [
-        "debugging",
         "triage",
+        "github-issues",
         "root-cause",
-        "github-issue",
+        "issue-workflow",
+        "agent-brief",
         "tdd"
       ],
       "target_llms": [
         "all"
       ],
       "source": "mattpocock/skills",
-      "aliases": [],
-      "upstream": null,
+      "aliases": [
+        "triage-issue"
+      ],
+      "upstream": "https://github.com/mattpocock/skills/tree/main/skills/engineering/triage",
       "chains_to": [
+        "planning/grill-with-docs",
+        "development/diagnose",
         "development/tdd"
       ],
-      "path": "development/triage-issue/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/development/triage-issue/SKILL.md"
+      "path": "development/triage/SKILL.md",
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/development/triage/SKILL.md"
     },
     {
       "slug": "planning/grill-me",
@@ -226,43 +284,44 @@
         "review"
       ],
       "target_llms": [
-        "chatgpt",
-        "claude-code"
+        "all"
       ],
       "source": "unknown",
       "aliases": [],
       "upstream": null,
       "chains_to": [
-        "planning/write-a-prd",
+        "planning/to-prd",
         "planning/prd-to-plan",
         "tooling/write-a-skill"
       ],
       "path": "planning/grill-me/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/planning/grill-me/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/planning/grill-me/SKILL.md"
     },
     {
-      "slug": "planning/prd-to-issues",
-      "name": "prd-to-issues",
+      "slug": "planning/grill-with-docs",
+      "name": "grill-with-docs",
       "category": "planning",
-      "description": "Break a PRD into independently-grabbable GitHub issues using vertical slices, annotated with HITL/AFK type. Triggers: 'create GitHub issues from this PRD', 'slice into tickets'. Do NOT trigger without an existing PRD.",
+      "description": "Stress-test a plan against the existing codebase, domain glossary, and documented decisions. Use when the user wants to be grilled but the answer depends on project terminology, CONTEXT.md, ADRs, or current implementation behavior.",
       "tags": [
+        "critique",
         "planning",
-        "github-issues",
-        "vertical-slice",
-        "kanban",
-        "tickets"
+        "domain-language",
+        "adr",
+        "documentation",
+        "codebase-context"
       ],
       "target_llms": [
         "all"
       ],
       "source": "mattpocock/skills",
       "aliases": [],
-      "upstream": null,
+      "upstream": "https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs",
       "chains_to": [
-        "development/tdd"
+        "planning/to-prd",
+        "architecture/improve-codebase-architecture"
       ],
-      "path": "planning/prd-to-issues/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/planning/prd-to-issues/SKILL.md"
+      "path": "planning/grill-with-docs/SKILL.md",
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/planning/grill-with-docs/SKILL.md"
     },
     {
       "slug": "planning/prd-to-plan",
@@ -283,35 +342,83 @@
       "aliases": [],
       "upstream": "https://github.com/mattpocock/skills/tree/main/prd-to-plan",
       "chains_to": [
-        "planning/prd-to-issues"
+        "planning/to-issues"
       ],
       "path": "planning/prd-to-plan/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/planning/prd-to-plan/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/planning/prd-to-plan/SKILL.md"
     },
     {
-      "slug": "planning/write-a-prd",
-      "name": "write-a-prd",
+      "slug": "planning/to-issues",
+      "name": "to-issues",
       "category": "planning",
-      "description": "Synthesize the current conversation and codebase context into a structured PRD, usually filed as a GitHub issue. Triggers: 'write a PRD', 'spec this out', 'turn this into requirements'. Do NOT trigger when a PRD already exists, when the user wants implementation now, or when the user explicitly asks to be grilled first.",
+      "description": "Break a plan, spec, or PRD into independently-grabbable issues using tracer-bullet vertical slices. Triggers: 'create issues', 'slice into tickets', 'turn this plan into issues', 'implementation tickets', or /to-issues. Do NOT trigger without a plan, spec, PRD, or issue reference to work from.",
       "tags": [
         "planning",
-        "prd",
-        "requirements",
-        "github-issue"
+        "github-issues",
+        "vertical-slice",
+        "tracer-bullets",
+        "tickets"
       ],
       "target_llms": [
         "all"
       ],
       "source": "mattpocock/skills",
       "aliases": [
-        "to-prd"
+        "prd-to-issues"
       ],
-      "upstream": "https://github.com/mattpocock/skills/tree/main/to-prd",
+      "upstream": "https://github.com/mattpocock/skills/tree/main/skills/engineering/to-issues",
+      "chains_to": [
+        "development/tdd"
+      ],
+      "path": "planning/to-issues/SKILL.md",
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/planning/to-issues/SKILL.md"
+    },
+    {
+      "slug": "planning/to-prd",
+      "name": "to-prd",
+      "category": "planning",
+      "description": "Turn the current conversation context and codebase understanding into a structured PRD, optionally filed in the project issue tracker. Triggers: 'create a PRD', 'write a PRD', 'spec this out', 'turn this into requirements', or /to-prd. Do NOT interview by default; synthesize what is already known and ask only genuinely blocking clarifications.",
+      "tags": [
+        "planning",
+        "prd",
+        "requirements",
+        "github-issue",
+        "deep-modules"
+      ],
+      "target_llms": [
+        "all"
+      ],
+      "source": "mattpocock/skills",
+      "aliases": [
+        "write-a-prd"
+      ],
+      "upstream": "https://github.com/mattpocock/skills/tree/main/skills/engineering/to-prd",
       "chains_to": [
         "planning/prd-to-plan"
       ],
-      "path": "planning/write-a-prd/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/planning/write-a-prd/SKILL.md"
+      "path": "planning/to-prd/SKILL.md",
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/planning/to-prd/SKILL.md"
+    },
+    {
+      "slug": "productivity/caveman",
+      "name": "caveman",
+      "category": "productivity",
+      "description": "Ultra-compressed communication mode that cuts filler, articles, hedging, and pleasantries while keeping full technical accuracy. Use when user says 'caveman mode', 'talk like caveman', 'use caveman', 'less tokens', 'be brief', or invokes /caveman.",
+      "tags": [
+        "brevity",
+        "token-saving",
+        "communication",
+        "terse-mode"
+      ],
+      "target_llms": [
+        "all"
+      ],
+      "source": "mattpocock/skills",
+      "aliases": [],
+      "upstream": "https://github.com/mattpocock/skills/tree/main/skills/productivity/caveman",
+      "chains_to": [],
+      "path": "productivity/caveman/SKILL.md",
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/productivity/caveman/SKILL.md"
     },
     {
       "slug": "session/strategic-compact",
@@ -330,35 +437,10 @@
       ],
       "source": "community/affaan-m/everything-claude-code",
       "aliases": [],
-      "upstream": null,
+      "upstream": "https://github.com/affaan-m/everything-claude-code/tree/main/skills/strategic-compact",
       "chains_to": [],
       "path": "session/strategic-compact/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/session/strategic-compact/SKILL.md"
-    },
-    {
-      "slug": "session/systematic-debugging",
-      "name": "systematic-debugging",
-      "category": "session",
-      "description": "Structured diagnosis for silent, environment-specific, or hard-to-reproduce failures. Use when: \"failing silently\", \"crashed without output\", \"can't reproduce this\", \"it worked before\", or any failure where the error is absent or misleading. Do NOT use when the root cause is already known — go directly to development/tdd.",
-      "tags": [
-        "debugging",
-        "diagnosis",
-        "silent-failure",
-        "environment",
-        "root-cause"
-      ],
-      "target_llms": [
-        "all"
-      ],
-      "source": "community/obra/superpowers",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [
-        "development/triage-issue",
-        "development/tdd"
-      ],
-      "path": "session/systematic-debugging/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/session/systematic-debugging/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/session/strategic-compact/SKILL.md"
     },
     {
       "slug": "tooling/edit-article",
@@ -372,15 +454,14 @@
         "prose"
       ],
       "target_llms": [
-        "chatgpt",
-        "claude-code"
+        "all"
       ],
       "source": "unknown",
       "aliases": [],
       "upstream": null,
       "chains_to": [],
       "path": "tooling/edit-article/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/edit-article/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/tooling/edit-article/SKILL.md"
     },
     {
       "slug": "tooling/llm-wiki",
@@ -404,7 +485,7 @@
         "session/strategic-compact"
       ],
       "path": "tooling/llm-wiki/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/llm-wiki/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/tooling/llm-wiki/SKILL.md"
     },
     {
       "slug": "tooling/obsidian-vault",
@@ -424,11 +505,9 @@
       "source": "mattpocock/skills",
       "aliases": [],
       "upstream": null,
-      "chains_to": [
-        "tooling/ubiquitous-language"
-      ],
+      "chains_to": [],
       "path": "tooling/obsidian-vault/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/obsidian-vault/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/tooling/obsidian-vault/SKILL.md"
     },
     {
       "slug": "tooling/setup-pre-commit",
@@ -453,7 +532,7 @@
         "development/git-guardrails"
       ],
       "path": "tooling/setup-pre-commit/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/setup-pre-commit/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/tooling/setup-pre-commit/SKILL.md"
     },
     {
       "slug": "tooling/skill-audit",
@@ -477,31 +556,7 @@
         "tooling/write-a-skill"
       ],
       "path": "tooling/skill-audit/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/skill-audit/SKILL.md"
-    },
-    {
-      "slug": "tooling/ubiquitous-language",
-      "name": "ubiquitous-language",
-      "category": "tooling",
-      "description": "Extract a DDD-style ubiquitous language glossary from the current conversation. Triggers: 'extract domain language', 'build a glossary', 'DDD glossary', 'what are the key terms'.",
-      "tags": [
-        "ddd",
-        "glossary",
-        "domain-language",
-        "documentation",
-        "vocabulary"
-      ],
-      "target_llms": [
-        "all"
-      ],
-      "source": "mattpocock/skills",
-      "aliases": [],
-      "upstream": null,
-      "chains_to": [
-        "planning/write-a-prd"
-      ],
-      "path": "tooling/ubiquitous-language/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/ubiquitous-language/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/tooling/skill-audit/SKILL.md"
     },
     {
       "slug": "tooling/write-a-skill",
@@ -521,10 +576,10 @@
       "aliases": [],
       "upstream": null,
       "chains_to": [
-        "tooling/ubiquitous-language"
+        "tooling/skill-audit"
       ],
       "path": "tooling/write-a-skill/SKILL.md",
-      "url": "https://raw.githubusercontent.com/deveshpat/skills/main/tooling/write-a-skill/SKILL.md"
+      "url": "https://raw.githubusercontent.com/deveshpat/Skill-Binder/main/tooling/write-a-skill/SKILL.md"
     }
   ]
 }
